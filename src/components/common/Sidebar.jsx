@@ -1,198 +1,154 @@
-import { NavLink, useLocation } from 'react-router-dom'
+import { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const NAV_ITEMS = [
-  { label: 'Home',    path: '/home',    icon: HomeIcon },
-  { label: 'Vendors', path: '/vendors', icon: VendorsIcon },
-  { label: 'Items',   path: '/items',   icon: ItemsIcon },
-]
+  { label: "Dashboard", path: "/admin/dashboard", icon: "dashboard" },
+  { label: "Parts", path: "/admin/parts", icon: "inventory_2" },
+  {
+    label: "Purchase Invoices",
+    path: "/admin/purchase-invoices",
+    icon: "receipt_long",
+  },
+  {
+    label: "Sales Invoices",
+    path: "/admin/sales-invoices",
+    icon: "point_of_sale",
+  },
+  { label: "Vendors", path: "/admin/vendors", icon: "storefront" },
+  { label: "Staff", path: "/admin/staff", icon: "badge" },
+  { label: "Customers", path: "/admin/customers", icon: "group" },
+  { label: "Search Customers", path: "/admin/search", icon: "manage_search" },
+  { label: "Financial Reports", path: "/admin/reports", icon: "bar_chart" },
+  {
+    label: "Low Stock",
+    path: "/admin/low-stock",
+    icon: "warning",
+    badge: true,
+  },
+];
 
 export default function Sidebar() {
+  const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
+
   return (
-    <aside style={styles.sidebar}>
+    <aside
+      className={`
+        flex flex-col shrink-0 min-h-screen
+        bg-[#141414] border-r border-[#222]
+        transition-all duration-250 ease-in-out overflow-hidden
+        ${collapsed ? "w-[68px]" : "w-[220px]"}
+      `}
+    >
       {/* Logo */}
-      <div style={styles.logo}>
-        <div style={styles.logoMark}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
+      <div
+        className={`
+          flex items-center gap-3 border-b border-[#222] mb-2
+          ${collapsed ? "justify-center px-0 py-5" : "px-[18px] py-5"}
+        `}
+      >
+        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#e91e8c] to-[#c2185b] flex items-center justify-center shrink-0">
+          <span
+            className="material-icons text-white"
+            style={{ fontSize: "18px" }}
+          >
+            bolt
+          </span>
         </div>
-        <span style={styles.logoText}>FleetFactory</span>
+        {!collapsed && (
+          <span className="text-white font-bold text-[15px] tracking-wide whitespace-nowrap">
+            FleetFactory
+          </span>
+        )}
       </div>
 
+      {/* Collapse toggle */}
+      <button
+        onClick={() => setCollapsed(!collapsed)}
+        className="flex justify-center items-center py-2 text-[#555] hover:text-[#e91e8c] transition-colors cursor-pointer bg-transparent border-none"
+        title={collapsed ? "Expand" : "Collapse"}
+      >
+        <span className="material-icons" style={{ fontSize: "20px" }}>
+          {collapsed ? "menu_open" : "menu"}
+        </span>
+      </button>
+
       {/* Nav */}
-      <nav style={styles.nav}>
-        <span style={styles.navLabel}>MAIN MENU</span>
-        {NAV_ITEMS.map(({ label, path, icon: Icon }) => (
-          <NavItem key={path} label={label} path={path} Icon={Icon} />
+      <nav className="flex-1 flex flex-col gap-0.5 px-2 overflow-y-auto">
+        {NAV_ITEMS.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            title={collapsed ? item.label : ""}
+            className={({ isActive }) =>
+              `flex items-center gap-3 rounded-lg text-[13.5px] whitespace-nowrap
+               border-l-2 transition-all duration-150 no-underline
+               ${collapsed ? "justify-center px-0 py-[10px]" : "px-3 py-[10px]"}
+               ${
+                 isActive
+                   ? "text-[#e91e8c] bg-[rgba(233,30,140,0.1)] border-l-[#e91e8c] font-semibold"
+                   : "text-[#888] bg-transparent border-l-transparent font-normal hover:text-[#ccc] hover:bg-[rgba(255,255,255,0.04)]"
+               }`
+            }
+          >
+            <span
+              className="material-icons shrink-0"
+              style={{ fontSize: "20px" }}
+            >
+              {item.icon}
+            </span>
+            {!collapsed && <span>{item.label}</span>}
+            {!collapsed && item.badge && (
+              <span className="ml-auto bg-[#e91e8c] text-white text-[10px] font-bold px-1.5 py-px rounded-full leading-none">
+                !
+              </span>
+            )}
+          </NavLink>
         ))}
       </nav>
 
       {/* Bottom */}
-      <div style={styles.bottom}>
-        <div style={styles.userCard}>
-          <div style={styles.avatar}>GM</div>
-          <div>
-            <div style={{ fontWeight: 600, fontSize: 13 }}>Gavin Myers</div>
-            <div style={{ color: 'var(--text-muted)', fontSize: 11 }}>Admin</div>
-          </div>
-        </div>
+      <div className="flex flex-col gap-0.5 px-2 py-3 border-t border-[#222]">
+        <button
+          className={`
+            flex items-center gap-3 rounded-lg text-[13.5px] whitespace-nowrap
+            text-[#888] hover:text-[#ccc] bg-transparent border-none cursor-pointer
+            transition-colors duration-150 w-full
+            ${collapsed ? "justify-center px-0 py-[10px]" : "px-3 py-[10px]"}
+          `}
+          title={collapsed ? "Settings" : ""}
+        >
+          <span
+            className="material-icons shrink-0"
+            style={{ fontSize: "20px" }}
+          >
+            settings
+          </span>
+          {!collapsed && <span>Settings</span>}
+        </button>
+
+        <button
+          onClick={() => {
+            localStorage.clear();
+            navigate("/login");
+          }}
+          className={`
+            flex items-center gap-3 rounded-lg text-[13.5px] whitespace-nowrap
+            text-[#888] hover:text-[#e91e8c] bg-transparent border-none cursor-pointer
+            transition-colors duration-150 w-full
+            ${collapsed ? "justify-center px-0 py-[10px]" : "px-3 py-[10px]"}
+          `}
+          title={collapsed ? "Logout" : ""}
+        >
+          <span
+            className="material-icons shrink-0"
+            style={{ fontSize: "20px" }}
+          >
+            logout
+          </span>
+          {!collapsed && <span>Logout</span>}
+        </button>
       </div>
     </aside>
-  )
-}
-
-function NavItem({ label, path, Icon }) {
-  return (
-    <NavLink
-      to={path}
-      style={({ isActive }) => ({
-        ...styles.navItem,
-        ...(isActive ? styles.navItemActive : {}),
-      })}
-    >
-      {({ isActive }) => (
-        <>
-          <span style={{
-            ...styles.navIcon,
-            color: isActive ? 'var(--accent)' : 'var(--text-muted)',
-          }}>
-            <Icon />
-          </span>
-          <span>{label}</span>
-          {isActive && <span style={styles.activeDot} />}
-        </>
-      )}
-    </NavLink>
-  )
-}
-
-const styles = {
-  sidebar: {
-    width: 'var(--sidebar-width)',
-    background: 'var(--bg-surface)',
-    borderRight: '1px solid var(--border)',
-    display: 'flex',
-    flexDirection: 'column',
-    padding: '20px 0',
-    flexShrink: 0,
-  },
-  logo: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 10,
-    padding: '0 20px 28px',
-    borderBottom: '1px solid var(--border)',
-    marginBottom: 20,
-  },
-  logoMark: {
-    width: 36,
-    height: 36,
-    background: 'var(--accent)',
-    borderRadius: 10,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: 'var(--shadow-accent)',
-  },
-  logoText: {
-    fontFamily: 'var(--font-display)',
-    fontWeight: 700,
-    fontSize: 15,
-    color: 'var(--text-primary)',
-    letterSpacing: '-0.3px',
-  },
-  nav: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 2,
-    padding: '0 12px',
-  },
-  navLabel: {
-    fontSize: 10,
-    fontWeight: 700,
-    letterSpacing: '0.1em',
-    color: 'var(--text-muted)',
-    padding: '0 8px 10px',
-  },
-  navItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 10,
-    padding: '10px 12px',
-    borderRadius: 'var(--radius-sm)',
-    color: 'var(--text-secondary)',
-    fontWeight: 500,
-    fontSize: 13.5,
-    transition: 'all 0.15s ease',
-    position: 'relative',
-    textDecoration: 'none',
-  },
-  navItemActive: {
-    background: 'var(--accent-muted)',
-    color: 'var(--text-primary)',
-    border: '1px solid var(--accent-border)',
-  },
-  navIcon: {
-    display: 'flex',
-    alignItems: 'center',
-    width: 16,
-    flexShrink: 0,
-  },
-  activeDot: {
-    marginLeft: 'auto',
-    width: 6,
-    height: 6,
-    borderRadius: '50%',
-    background: 'var(--accent)',
-    boxShadow: '0 0 6px var(--accent)',
-  },
-  bottom: {
-    padding: '16px 12px 0',
-    borderTop: '1px solid var(--border)',
-    marginTop: 'auto',
-  },
-  userCard: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 10,
-    padding: '10px 8px',
-    borderRadius: 'var(--radius-sm)',
-    cursor: 'pointer',
-  },
-  avatar: {
-    width: 34,
-    height: 34,
-    borderRadius: '50%',
-    background: 'var(--accent)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: 12,
-    fontWeight: 700,
-    flexShrink: 0,
-  },
-}
-
-//Inline SVG icons
-function HomeIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
-    </svg>
-  )
-}
-function VendorsIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
-    </svg>
-  )
-}
-function ItemsIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="3" width="7" height="7"/><rect x="15" y="3" width="7" height="7"/><rect x="15" y="15" width="7" height="7"/><rect x="2" y="15" width="7" height="7"/>
-    </svg>
-  )
+  );
 }

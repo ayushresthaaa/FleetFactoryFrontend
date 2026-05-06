@@ -1,116 +1,93 @@
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from "react-router-dom";
 
 const PAGE_TITLES = {
-  '/home': 'Home',
-  '/vendors': 'Vendors',
-  '/items': 'Items',
-}
+  "/admin/dashboard": "Dashboard",
+  "/admin/parts": "Parts Management",
+  "/admin/purchase-invoices": "Purchase Invoices",
+  "/admin/sales-invoices": "Sales Invoices",
+  "/admin/vendors": "Vendors",
+  "/admin/staff": "Staff Management",
+  "/admin/customers": "Customers",
+  "/admin/search": "Search Customers",
+  "/admin/reports": "Financial Reports",
+  "/admin/low-stock": "Low Stock Alerts",
+};
 
 export default function Topbar() {
-  const { pathname } = useLocation()
-  const title = PAGE_TITLES[pathname] ?? 'Dashboard'
+  const location = useLocation();
+  const navigate = useNavigate();
+  const title = PAGE_TITLES[location.pathname] ?? "Admin Panel";
+
+  const email = localStorage.getItem("email") ?? "admin@fleet.com";
+  const initials = email.slice(0, 2).toUpperCase();
+  const displayName = email.split("@")[0];
 
   return (
-    <header style={styles.topbar}>
-      <div style={styles.left}>
-        <span style={styles.title}>{title}</span>
+    <header className="h-[60px] bg-[#141414] border-b border-[#222] flex items-center px-6 gap-4 sticky top-0 z-10">
+      {/* Page title */}
+      <h1 className="text-white text-[15px] font-semibold flex-1 tracking-wide">
+        {title}
+      </h1>
+
+      {/* Search */}
+      <div className="relative">
+        <span
+          className="material-icons absolute left-2.5 top-1/2 -translate-y-1/2 text-[#444] pointer-events-none"
+          style={{ fontSize: "17px" }}
+        >
+          search
+        </span>
+        <input
+          type="text"
+          placeholder="Search..."
+          className="
+            bg-[#1e1e1e] border border-[#2a2a2a] rounded-lg
+            pl-8 pr-3 py-[7px] text-[#ccc] text-[13px] w-[200px]
+            outline-none transition-colors duration-150
+            focus:border-[#e91e8c] placeholder:text-[#444]
+          "
+        />
       </div>
-      <div style={styles.right}>
-        <div style={styles.searchBox}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-          <input style={styles.searchInput} placeholder="Search..." />
+
+      {/* Low stock bell */}
+      <button
+        onClick={() => navigate("/admin/low-stock")}
+        className="
+          relative w-9 h-9 flex items-center justify-center
+          bg-[#1e1e1e] border border-[#2a2a2a] rounded-lg
+          text-[#888] hover:text-[#e91e8c] hover:border-[#e91e8c33]
+          transition-colors duration-150 cursor-pointer
+        "
+        title="Low Stock Alerts"
+      >
+        <span className="material-icons" style={{ fontSize: "19px" }}>
+          notifications
+        </span>
+        {/* Red dot */}
+        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#e91e8c] rounded-full border-2 border-[#141414]" />
+      </button>
+
+      {/* User chip */}
+      <div className="flex items-center gap-2.5 bg-[#1e1e1e] border border-[#2a2a2a] rounded-xl px-3 py-1.5 cursor-pointer hover:border-[#333] transition-colors">
+        {/* Avatar */}
+        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#e91e8c] to-[#c2185b] flex items-center justify-center text-white text-[11px] font-bold shrink-0">
+          {initials}
         </div>
-        <button style={styles.iconBtn}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>
-          </svg>
-          <span style={styles.badge}>3</span>
-        </button>
-        <div style={styles.avatar}>GM</div>
+        {/* Name + role */}
+        <div className="flex flex-col leading-tight">
+          <span className="text-[#ddd] text-[12px] font-semibold capitalize">
+            {displayName}
+          </span>
+          <span className="text-[#555] text-[10px]">Admin</span>
+        </div>
+        {/* Chevron */}
+        <span
+          className="material-icons text-[#444] ml-1"
+          style={{ fontSize: "16px" }}
+        >
+          expand_more
+        </span>
       </div>
     </header>
-  )
-}
-
-const styles = {
-  topbar: {
-    height: 'var(--topbar-height)',
-    background: 'var(--bg-surface)',
-    borderBottom: '1px solid var(--border)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '0 32px',
-    flexShrink: 0,
-  },
-  left: { display: 'flex', alignItems: 'center', gap: 12 },
-  title: {
-    fontFamily: 'var(--font-display)',
-    fontWeight: 700,
-    fontSize: 18,
-    color: 'var(--text-primary)',
-    letterSpacing: '-0.3px',
-  },
-  right: { display: 'flex', alignItems: 'center', gap: 16 },
-  searchBox: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-    background: 'var(--bg-elevated)',
-    border: '1px solid var(--border-strong)',
-    borderRadius: 'var(--radius-sm)',
-    padding: '8px 14px',
-    width: 200,
-  },
-  searchInput: {
-    background: 'none',
-    border: 'none',
-    outline: 'none',
-    color: 'var(--text-primary)',
-    fontSize: 13,
-    fontFamily: 'var(--font-body)',
-    width: '100%',
-  },
-  iconBtn: {
-    position: 'relative',
-    width: 36,
-    height: 36,
-    borderRadius: 'var(--radius-sm)',
-    background: 'var(--bg-elevated)',
-    border: '1px solid var(--border)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  badge: {
-    position: 'absolute',
-    top: -4,
-    right: -4,
-    background: 'var(--accent)',
-    color: '#fff',
-    fontSize: 9,
-    fontWeight: 700,
-    width: 16,
-    height: 16,
-    borderRadius: '50%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatar: {
-    width: 34,
-    height: 34,
-    borderRadius: '50%',
-    background: 'var(--accent)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: 12,
-    fontWeight: 700,
-    color: '#fff',
-    cursor: 'pointer',
-    boxShadow: 'var(--shadow-accent)',
-  },
+  );
 }

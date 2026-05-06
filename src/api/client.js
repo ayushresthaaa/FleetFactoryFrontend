@@ -1,21 +1,20 @@
-const BASE_URL = import.meta.env.VITE_API_URL
+import axios from "axios";
 
-export async function apiFetch(path, options = {}) {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-    ...options,
-  })
+const client = axios.create({
+  baseURL: "http://localhost:5192/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
-  if (!res.ok) {
-    const error = await res.text()
-    throw new Error(error || `Request failed: ${res.status}`)
+client.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
 
-  // 204 No Content
-  if (res.status === 204) return null
+  return config;
+});
 
-  return res.json()
-}
+export default client;
