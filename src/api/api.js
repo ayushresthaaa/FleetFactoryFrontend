@@ -6,11 +6,85 @@ export const register = (data) => client.post("/Auth/register", data);
 //parts
 export const getParts = (pageNumber = 1, pageSize = 10) =>
   client.get(`/Parts?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+
 export const getPartById = (id) => client.get(`/Parts/${id}`);
-export const createPart = (data) => client.post("/Parts", data);
-export const updatePart = (id, data) => client.put(`/Parts/${id}`, data);
+
+export const createPart = (data) =>
+  client.post("/Parts", data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+export const updatePart = (id, data) =>
+  client.put(`/Parts/${id}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
 export const deletePart = (id) => client.delete(`/Parts/${id}`);
 
+export const searchParts = (keyword, pageNumber = 1, pageSize = 10) =>
+  client.get(
+    `/Parts/search?keyword=${encodeURIComponent(keyword)}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
+  );
+
+export const getLowStockParts = (threshold = 10) =>
+  client.get(`/Parts/low-stock?threshold=${threshold}`);
+
+export const getAvailableParts = () => client.get("/Parts/available");
+
+export const getPartStockMovements = (id) =>
+  client.get(`/Parts/${id}/stock-movements`);
+
+//part categories
+export const getPartCategories = () => client.get("/PartCategory");
+
+export const getPartCategoryById = (id) => client.get(`/PartCategory/${id}`);
+
+export const createPartCategory = (data) => client.post("/PartCategory", data);
+
+export const updatePartCategory = (id, data) =>
+  client.put(`/PartCategory/${id}`, data);
+
+export const deletePartCategory = (id) => client.delete(`/PartCategory/${id}`);
+
+// sales invoices
+export const getSalesInvoices = (pageNumber = 1, pageSize = 10) =>
+  client.get(`/SalesInvoice?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+
+export const getSalesInvoiceById = (id) => client.get(`/SalesInvoice/${id}`);
+
+export const createSalesInvoice = (data) => client.post("/SalesInvoice", data);
+
+export const markSalesInvoicePaid = (id) =>
+  client.patch(`/SalesInvoice/${id}/mark-paid`);
+
+export const cancelSalesInvoice = (id) =>
+  client.patch(`/SalesInvoice/${id}/cancel`);
+
+export const searchSalesInvoices = ({
+  query = "",
+  status = null,
+  mode = null,
+  pageNumber = 1,
+  pageSize = 10,
+} = {}) => {
+  const params = new URLSearchParams();
+
+  if (query) params.append("query", query);
+  if (status !== null && status !== undefined) params.append("status", status);
+  if (mode !== null && mode !== undefined) params.append("mode", mode);
+
+  params.append("pageNumber", pageNumber);
+  params.append("pageSize", pageSize);
+
+  return client.get(`/SalesInvoice/search?${params.toString()}`);
+};
+
+export const getCustomerAppointmentsForInvoice = (customerId) =>
+  client.get(`/SalesInvoice/customer/${customerId}/appointments`);
 //vendors
 export const getVendors = (pageNumber = 1, pageSize = 100) =>
   client.get(`/Vendors?pageNumber=${pageNumber}&pageSize=${pageSize}`);
@@ -51,23 +125,10 @@ export const receivePurchaseInvoice = (id) =>
 export const payPurchaseInvoice = (id) =>
   client.patch(`/PurchaseInvoice/${id}/pay`);
 
-//sales invoice
-export const getSalesInvoices = (pageNumber = 1, pageSize = 10) =>
-  client.get(
-    `/CustomerStaffSide?pageNumber=${pageNumber}&pageSize=${pageSize}`,
-  );
-export const getSalesInvoiceById = (id) =>
-  client.get(`/CustomerStaffSide/${id}`);
-export const createSalesInvoice = (data) =>
-  client.post("/CustomerStaffSide", data);
-export const sendInvoiceEmail = (id) =>
-  client.post(`/CustomerStaffSide/${id}/send-email`);
-
 //reports
 export const getFinancialReport = (type = "daily") =>
   client.get(`/reports/financial?type=${type}`);
 
-
-//low stock check 
+//low stock check
 export const checkLowStock = () => client.post("/LowStock/check");
 export const getLowStockAlerts = () => client.get("/LowStock/notifications");

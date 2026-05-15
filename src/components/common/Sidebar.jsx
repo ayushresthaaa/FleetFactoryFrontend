@@ -3,27 +3,53 @@ import { NavLink, useNavigate } from "react-router-dom";
 
 const NAV_ITEMS = [
   { label: "Dashboard", path: "/admin/dashboard", icon: "dashboard" },
+
+  // inventory
   { label: "Parts", path: "/admin/parts", icon: "inventory_2" },
+
+  {
+    label: "Part Categories",
+    path: "/admin/part-categories",
+    icon: "category",
+  },
+
   {
     label: "Purchase Invoices",
     path: "/admin/purchase-invoices",
     icon: "receipt_long",
   },
+
   {
     label: "Sales Invoices",
     path: "/admin/sales-invoices",
     icon: "point_of_sale",
   },
-  { label: "Vendors", path: "/admin/vendors", icon: "storefront" },
-  { label: "Staff", path: "/admin/staff", icon: "badge" },
-  { label: "Customers", path: "/admin/customers", icon: "group" },
-  { label: "Search Customers", path: "/admin/search", icon: "manage_search" },
-  { label: "Financial Reports", path: "/admin/reports", icon: "bar_chart" },
+
   {
     label: "Low Stock",
     path: "/admin/low-stock",
     icon: "warning",
     badge: true,
+  },
+
+  // business
+  { label: "Vendors", path: "/admin/vendors", icon: "storefront" },
+
+  { label: "Customers", path: "/admin/customers", icon: "group" },
+
+  {
+    label: "Search Customers",
+    path: "/admin/search",
+    icon: "manage_search",
+  },
+
+  { label: "Staff", path: "/admin/staff", icon: "badge" },
+
+  // analytics
+  {
+    label: "Financial Reports",
+    path: "/admin/reports",
+    icon: "bar_chart",
   },
 ];
 

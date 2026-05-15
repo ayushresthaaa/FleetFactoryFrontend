@@ -8,6 +8,10 @@ import Customers from "./pages/Admin/Customers";
 import Staff from "./pages/Admin/Staff";
 import Reports from "./pages/Admin/Reports";
 import LowStock from "./pages/Admin/LowStock";
+import PartCategories from "./pages/Admin/PartCategory";
+import SalesInvoices from "./pages/Admin/SalesInvoice/SalesInvoice";
+import CreateSalesInvoice from "./pages/Admin/SalesInvoice/CreateSalesInvoice";
+import SalesInvoiceDetail from "./pages/Admin/SalesInvoice/SalesInvoiceDetail";
 
 const ComingSoon = ({ name }) => (
   <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
@@ -36,10 +40,6 @@ export default function App() {
           <Route path="dashboard" element={<ComingSoon name="Dashboard" />} />
           <Route path="parts" element={<Parts />} />
           <Route path="purchase-invoices" element={<PurchaseInvoices />} />
-          <Route
-            path="sales-invoices"
-            element={<ComingSoon name="Sales Invoices" />}
-          />
           <Route path="vendors" element={<Vendors />} />
           <Route path="staff" element={<Staff />} />
           <Route path="customers" element={<Customers />} />
@@ -49,6 +49,13 @@ export default function App() {
           />
           <Route path="reports" element={<Reports />} />
           <Route path="low-stock" element={<LowStock />} />
+          <Route path="part-categories" element={<PartCategories />} />
+          <Route path="sales-invoices" element={<SalesInvoices />} />
+          <Route path="sales-invoices/:id" element={<SalesInvoiceDetail />} />
+          <Route
+            path="sales-invoices/create"
+            element={<CreateSalesInvoice />}
+          />
         </Route>
 
         <Route path="*" element={<Navigate to="/admin" replace />} />
