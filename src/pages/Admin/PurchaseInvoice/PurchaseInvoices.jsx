@@ -1,71 +1,128 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
+  searchPurchaseInvoices,
   getPurchaseInvoices,
   receivePurchaseInvoice,
   payPurchaseInvoice,
-} from "../../api/api";
-import PurchaseInvoiceModal from "../../components/common/Modals/PurchaseInvoiceModal";
-import { generatePurchaseInvoicePDF } from "../../utils/pdfGenerator";
+  cancelPurchaseInvoice,
+} from "../../../api/api";
+import PurchaseInvoiceModal from "./PurchaseInvoiceModal";
+
+const money = (value) => `Rs. ${Number(value ?? 0).toLocaleString()}`;
 
 const STATUS_STYLE = {
-  Pending: { cls: "bg-yellow-500/15 text-yellow-400", icon: "schedule" },
-  Received: { cls: "bg-blue-500/15 text-blue-400", icon: "inventory" },
-  Paid: { cls: "bg-green-500/15 text-green-400", icon: "check_circle" },
-  Cancelled: { cls: "bg-red-500/15 text-red-400", icon: "cancel" },
+  Pending: "bg-yellow-500/15 text-yellow-400",
+  Received: "bg-blue-500/15 text-blue-400",
+  Paid: "bg-green-500/15 text-green-400",
+  Cancelled: "bg-red-500/15 text-red-400",
+};
+
+const STATUS_ICON = {
+  Pending: "schedule",
+  Received: "inventory",
+  Paid: "check_circle",
+  Cancelled: "cancel",
+};
+
+// backend enum values
+const STATUS_ENUM = {
+  Pending: 0,
+  Received: 1,
+  Paid: 2,
+  Cancelled: 3,
 };
 
 export default function PurchaseInvoices() {
+  const navigate = useNavigate();
+
   const [invoices, setInvoices] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
-  const pageSize = 10;
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
-  const [actionLoading, setActionLoading] = useState(null); // invoice id being acted on
+  const [actionLoadingId, setActionLoadingId] = useState(null);
+
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  const pageSize = 10;
 
   useEffect(() => {
     let cancelled = false;
-    async function load() {
-      setLoading(true);
+
+    const load = async () => {
       try {
-        const res = await getPurchaseInvoices(pageNumber, pageSize);
-        const data = res.data?.data;
-        if (!cancelled) {
-          setInvoices(data?.items ?? []);
-          setTotalCount(data?.totalCount ?? 0);
+        setLoading(true);
+
+        let res;
+
+        // use base endpoint when no filters active (search endpoint may not be implemented yet)
+        if (!search.trim() && statusFilter === "all") {
+          res = await getPurchaseInvoices(pageNumber, pageSize);
+        } else {
+          const status =
+            statusFilter === "all" ? null : (STATUS_ENUM[statusFilter] ?? null);
+
+          res = await searchPurchaseInvoices({
+            query: search.trim(),
+            status,
+            pageNumber,
+            pageSize,
+          });
         }
+
+        if (cancelled) return;
+
+        const data = res.data?.data;
+        setInvoices(data?.items ?? []);
+        setTotalCount(data?.totalCount ?? 0);
       } catch {
-        if (!cancelled) setInvoices([]);
+        if (!cancelled) {
+          setInvoices([]);
+          setTotalCount(0);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
-    }
+    };
+
     load();
     return () => {
       cancelled = true;
     };
-  }, [pageNumber, pageSize, refresh]);
+  }, [pageNumber, refresh, search, statusFilter]);
 
   const refetch = () => setRefresh((r) => r + 1);
 
   const handleReceive = async (id) => {
-    setActionLoading(id + "_receive");
+    setActionLoadingId(id + "_receive");
     try {
       await receivePurchaseInvoice(id);
       refetch();
     } finally {
-      setActionLoading(null);
+      setActionLoadingId(null);
     }
   };
 
   const handlePay = async (id) => {
-    setActionLoading(id + "_pay");
+    setActionLoadingId(id + "_pay");
     try {
       await payPurchaseInvoice(id);
       refetch();
     } finally {
-      setActionLoading(null);
+      setActionLoadingId(null);
+    }
+  };
+
+  const handleCancel = async (id) => {
+    setActionLoadingId(id + "_cancel");
+    try {
+      await cancelPurchaseInvoice(id);
+      refetch();
+    } finally {
+      setActionLoadingId(null);
     }
   };
 
@@ -73,13 +130,49 @@ export default function PurchaseInvoices() {
   const pendingCount = invoices.filter((i) => i.status === "Pending").length;
   const receivedCount = invoices.filter((i) => i.status === "Received").length;
   const paidCount = invoices.filter((i) => i.status === "Paid").length;
-  const totalValue = invoices.reduce((s, i) => s + (i.totalAmount ?? 0), 0);
+  const totalValue = invoices.reduce(
+    (s, i) => s + Number(i.totalAmount ?? 0),
+    0,
+  );
 
   return (
     <div className="flex flex-col gap-5">
       {/* Top bar */}
       <div className="flex items-center gap-3">
-        <div className="flex-1" />
+        <div className="flex-1 flex items-center gap-2">
+          <div className="relative w-[340px]">
+            <span
+              className="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-[#555]"
+              style={{ fontSize: "18px" }}
+            >
+              search
+            </span>
+            <input
+              type="text"
+              placeholder="Search invoice, vendor..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPageNumber(1);
+              }}
+              className="w-full bg-[#1a1a1a] border border-[#252525] rounded-lg pl-10 pr-3 py-2 text-[13px] text-white outline-none focus:border-[#e91e8c]"
+            />
+          </div>
+
+          {["all", "Pending", "Received", "Paid", "Cancelled"].map((s) => (
+            <FilterBtn
+              key={s}
+              active={statusFilter === s}
+              onClick={() => {
+                setStatusFilter(s);
+                setPageNumber(1);
+              }}
+            >
+              {s === "all" ? "All" : s}
+            </FilterBtn>
+          ))}
+        </div>
+
         <button
           onClick={() => setModalOpen(true)}
           className="flex items-center gap-2 bg-gradient-to-r from-[#e91e8c] to-[#c2185b] text-white text-[13px] font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition-opacity cursor-pointer border-none"
@@ -95,9 +188,9 @@ export default function PurchaseInvoices() {
       <div className="grid grid-cols-4 gap-4">
         {[
           {
-            label: "Total Invoices",
-            value: totalCount,
-            icon: "receipt_long",
+            label: "Shown Value",
+            value: money(totalValue),
+            icon: "payments",
             color: "#e91e8c",
           },
           {
@@ -153,14 +246,9 @@ export default function PurchaseInvoices() {
       <div className="bg-[#1a1a1a] border border-[#252525] rounded-xl overflow-hidden">
         <div className="px-5 py-3.5 border-b border-[#252525] flex items-center justify-between">
           <h3 className="text-white text-[14px] font-semibold m-0">
-            All Purchase Invoices
+            Purchase Invoices
           </h3>
-          <span className="text-[#555] text-[12px]">
-            Total value:{" "}
-            <span className="text-white font-semibold">
-              Rs. {totalValue.toLocaleString()}
-            </span>
-          </span>
+          <span className="text-[#555] text-[12px]">{totalCount} total</span>
         </div>
 
         {loading ? (
@@ -182,7 +270,7 @@ export default function PurchaseInvoices() {
               receipt_long
             </span>
             <p className="text-[#555] text-[13px] m-0">
-              No purchase invoices yet
+              No purchase invoices found.
             </p>
           </div>
         ) : (
@@ -208,121 +296,112 @@ export default function PurchaseInvoices() {
                   ))}
                 </tr>
               </thead>
+
               <tbody>
                 {invoices.map((inv) => {
-                  const status =
-                    STATUS_STYLE[inv.status] ?? STATUS_STYLE.Pending;
+                  const isReceiveLoading =
+                    actionLoadingId === inv.id + "_receive";
+                  const isPayLoading = actionLoadingId === inv.id + "_pay";
+                  const isCancelLoading =
+                    actionLoadingId === inv.id + "_cancel";
+                  const anyLoading =
+                    isReceiveLoading || isPayLoading || isCancelLoading;
+
                   return (
                     <tr
                       key={inv.id}
                       className="border-b border-[#1f1f1f] hover:bg-[#1f1f1f] transition-colors"
                     >
-                      {/* Invoice No */}
                       <td className="px-5 py-3.5">
                         <span className="text-[#e91e8c] text-[12px] font-mono font-semibold bg-[rgba(233,30,140,0.08)] px-2 py-0.5 rounded">
                           {inv.invoiceNo}
                         </span>
                       </td>
 
-                      {/* Vendor */}
-                      <td className="px-5 py-3.5">
-                        <span className="text-white text-[13px] font-medium">
-                          {inv.vendorName}
-                        </span>
+                      <td className="px-5 py-3.5 text-white text-[13px] font-medium">
+                        {inv.vendorName || "No Vendor"}
                       </td>
 
-                      {/* Items count */}
-                      <td className="px-5 py-3.5">
-                        <span className="text-[#888] text-[12px]">
-                          {inv.items?.length ?? 0} item(s)
-                        </span>
+                      <td className="px-5 py-3.5 text-[#888] text-[12px]">
+                        {inv.items?.length ?? 0} item(s)
                       </td>
 
-                      {/* Total */}
-                      <td className="px-5 py-3.5">
-                        <span className="text-white text-[13px] font-semibold">
-                          Rs. {inv.totalAmount?.toLocaleString()}
-                        </span>
+                      <td className="px-5 py-3.5 text-white text-[13px] font-semibold">
+                        {money(inv.totalAmount)}
                       </td>
 
-                      {/* Status */}
                       <td className="px-5 py-3.5">
                         <span
-                          className={`flex items-center gap-1.5 w-fit text-[11px] font-semibold px-2.5 py-1 rounded-full ${status.cls}`}
+                          className={`flex items-center gap-1.5 w-fit text-[11px] font-semibold px-2.5 py-1 rounded-full ${
+                            STATUS_STYLE[inv.status] ?? "bg-[#333] text-[#888]"
+                          }`}
                         >
                           <span
                             className="material-icons"
                             style={{ fontSize: "12px" }}
                           >
-                            {status.icon}
+                            {STATUS_ICON[inv.status] ?? "help"}
                           </span>
                           {inv.status}
                         </span>
                       </td>
 
-                      {/* Date */}
-                      <td className="px-5 py-3.5">
-                        <span className="text-[#555] text-[12px]">
-                          {new Date(inv.createdAt).toLocaleDateString()}
-                        </span>
+                      <td className="px-5 py-3.5 text-[#555] text-[12px]">
+                        {inv.createdAt
+                          ? new Date(inv.createdAt).toLocaleDateString()
+                          : "—"}
                       </td>
 
-                      {/* Actions */}
                       <td className="px-5 py-3.5">
-                        <div className="flex items-center gap-1.5">
-                          {/* Receive — only if Pending */}
-                          {inv.status === "Pending" && (
-                            <button
-                              onClick={() => handleReceive(inv.id)}
-                              disabled={actionLoading === inv.id + "_receive"}
-                              className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-blue-500/15 text-blue-400 border border-blue-500/20 hover:bg-blue-500/25 transition-colors cursor-pointer disabled:opacity-50"
-                              title="Mark as Received (updates stock)"
-                            >
-                              <span
-                                className="material-icons"
-                                style={{ fontSize: "13px" }}
-                              >
-                                {actionLoading === inv.id + "_receive"
-                                  ? "refresh"
-                                  : "inventory"}
-                              </span>
-                              Receive
-                            </button>
-                          )}
-
-                          {/* Mark Paid — only if Received */}
-                          {inv.status === "Received" && (
-                            <button
-                              onClick={() => handlePay(inv.id)}
-                              disabled={actionLoading === inv.id + "_pay"}
-                              className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-green-500/15 text-green-400 border border-green-500/20 hover:bg-green-500/25 transition-colors cursor-pointer disabled:opacity-50"
-                              title="Mark as Paid"
-                            >
-                              <span
-                                className="material-icons"
-                                style={{ fontSize: "13px" }}
-                              >
-                                {actionLoading === inv.id + "_pay"
-                                  ? "refresh"
-                                  : "payments"}
-                              </span>
-                              Mark Paid
-                            </button>
-                          )}
-
-                          {/* PDF */}
+                        <div className="flex items-center gap-1">
+                          {/* View */}
                           <button
-                            onClick={() => generatePurchaseInvoicePDF(inv)}
-                            className="w-7 h-7 flex items-center justify-center rounded-lg text-[#555] hover:text-red-400 hover:bg-red-500/08 transition-colors cursor-pointer bg-transparent border-none"
-                            title="Download PDF"
+                            onClick={() =>
+                              navigate(`/admin/purchase-invoices/${inv.id}`)
+                            }
+                            className="w-7 h-7 flex items-center justify-center rounded-lg text-[#555] hover:text-white hover:bg-[#252525] transition-colors cursor-pointer bg-transparent border-none"
+                            title="View details"
                           >
                             <span
                               className="material-icons"
                               style={{ fontSize: "16px" }}
                             >
-                              picture_as_pdf
+                              visibility
                             </span>
                           </button>
+
+                          {/* Receive — only Pending */}
+                          {inv.status === "Pending" && (
+                            <button
+                              onClick={() => handleReceive(inv.id)}
+                              disabled={anyLoading}
+                              className="h-7 px-2 flex items-center justify-center rounded-lg text-[11px] text-blue-400 hover:bg-blue-500/10 transition-colors cursor-pointer bg-transparent border border-blue-500/20 disabled:opacity-50"
+                            >
+                              {isReceiveLoading ? "..." : "Receive"}
+                            </button>
+                          )}
+
+                          {/* Mark Paid — only Received */}
+                          {inv.status === "Received" && (
+                            <button
+                              onClick={() => handlePay(inv.id)}
+                              disabled={anyLoading}
+                              className="h-7 px-2 flex items-center justify-center rounded-lg text-[11px] text-green-400 hover:bg-green-500/10 transition-colors cursor-pointer bg-transparent border border-green-500/20 disabled:opacity-50"
+                            >
+                              {isPayLoading ? "..." : "Mark Paid"}
+                            </button>
+                          )}
+
+                          {/* Cancel — only Pending (backend enforces this) */}
+                          {inv.status === "Pending" && (
+                            <button
+                              onClick={() => handleCancel(inv.id)}
+                              disabled={anyLoading}
+                              className="h-7 px-2 flex items-center justify-center rounded-lg text-[11px] text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer bg-transparent border border-red-500/20 disabled:opacity-50"
+                            >
+                              {isCancelLoading ? "..." : "Cancel"}
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -333,13 +412,13 @@ export default function PurchaseInvoices() {
           </div>
         )}
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between px-5 py-3.5 border-t border-[#252525]">
             <span className="text-[#555] text-[12px]">
               Showing {(pageNumber - 1) * pageSize + 1}–
               {Math.min(pageNumber * pageSize, totalCount)} of {totalCount}
             </span>
+
             <div className="flex items-center gap-1">
               <PageBtn
                 disabled={pageNumber === 1}
@@ -349,6 +428,7 @@ export default function PurchaseInvoices() {
                   chevron_left
                 </span>
               </PageBtn>
+
               {Array.from({ length: totalPages }, (_, i) => i + 1)
                 .filter(
                   (p) =>
@@ -379,6 +459,7 @@ export default function PurchaseInvoices() {
                     </PageBtn>
                   ),
                 )}
+
               <PageBtn
                 disabled={pageNumber === totalPages}
                 onClick={() => setPageNumber((p) => p + 1)}
@@ -401,16 +482,30 @@ export default function PurchaseInvoices() {
   );
 }
 
+const FilterBtn = ({ children, active, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`px-3 py-2 rounded-lg border text-[12px] font-medium cursor-pointer transition-colors ${
+      active
+        ? "bg-[#e91e8c] border-[#e91e8c] text-white"
+        : "bg-[#1a1a1a] border-[#252525] text-[#888] hover:text-white hover:border-[#444]"
+    }`}
+  >
+    {children}
+  </button>
+);
+
 const PageBtn = ({ children, active, disabled, onClick }) => (
   <button
     onClick={onClick}
     disabled={disabled}
-    className={`
-      min-w-[28px] h-7 flex items-center justify-center rounded-lg text-[12px] font-medium
-      cursor-pointer border transition-colors
-      ${active ? "bg-[#e91e8c] text-white border-[#e91e8c]" : "bg-transparent text-[#888] border-[#252525] hover:text-white hover:border-[#444]"}
-      disabled:opacity-30 disabled:cursor-not-allowed
-    `}
+    className={`min-w-[28px] h-7 flex items-center justify-center rounded-lg text-[12px] font-medium cursor-pointer border transition-colors
+      ${
+        active
+          ? "bg-[#e91e8c] text-white border-[#e91e8c]"
+          : "bg-transparent text-[#888] border-[#252525] hover:text-white hover:border-[#444]"
+      }
+      disabled:opacity-30 disabled:cursor-not-allowed`}
   >
     {children}
   </button>

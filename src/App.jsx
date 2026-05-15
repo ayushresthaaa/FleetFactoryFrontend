@@ -1,8 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AdminLayout from "./layouts/AdminLayout";
 import Login from "./pages/Login";
-import Parts from "./pages/Admin/Parts";
-import PurchaseInvoices from "./pages/Admin/PurchaseInvoices";
+import Parts from "./pages/Admin/Parts/Parts";
+import PurchaseInvoices from "./pages/Admin/PurchaseInvoice/PurchaseInvoices";
+import PurchaseInvoiceDetail from "./pages/Admin/PurchaseInvoice/PurchaseInvoiceDetail";
 import Vendors from "./pages/Admin/Vendors";
 import Customers from "./pages/Admin/Customers";
 import Staff from "./pages/Admin/Staff";
@@ -40,6 +41,10 @@ export default function App() {
           <Route path="dashboard" element={<ComingSoon name="Dashboard" />} />
           <Route path="parts" element={<Parts />} />
           <Route path="purchase-invoices" element={<PurchaseInvoices />} />
+          <Route
+            path="purchase-invoices/:id"
+            element={<PurchaseInvoiceDetail />}
+          />
           <Route path="vendors" element={<Vendors />} />
           <Route path="staff" element={<Staff />} />
           <Route path="customers" element={<Customers />} />

@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createPurchaseInvoice, getVendors, getParts } from "../../../api/api";
 
 function buildForm() {
   return {
-    invoiceNo: "",
     vendorId: "",
     items: [],
   };
@@ -17,14 +16,15 @@ function InvoiceForm({ onClose, onSuccess }) {
   const [error, setError] = useState("");
 
   // Load vendors + parts on mount
-  useState(() => {
+  useEffect(() => {
     getVendors(1, 100)
       .then((r) => setVendors(r.data?.data?.items ?? []))
       .catch(() => {});
+
     getParts(1, 100)
       .then((r) => setParts(r.data?.data?.items ?? []))
       .catch(() => {});
-  });
+  }, []);
 
   const addItem = () =>
     setForm((f) => ({
@@ -67,8 +67,15 @@ function InvoiceForm({ onClose, onSuccess }) {
     setError("");
     setLoading(true);
     try {
+      console.log({
+        vendorId: form.vendorId,
+        items: form.items.map((i) => ({
+          partId: i.partId,
+          quantity: parseInt(i.quantity),
+          unitCost: parseFloat(i.unitCost),
+        })),
+      });
       await createPurchaseInvoice({
-        invoiceNo: form.invoiceNo.trim(),
         vendorId: form.vendorId,
         items: form.items.map((i) => ({
           partId: i.partId,
@@ -79,7 +86,12 @@ function InvoiceForm({ onClose, onSuccess }) {
       onSuccess();
       onClose();
     } catch (err) {
-      setError(err.response?.data?.message ?? "Something went wrong");
+      console.log(err.response?.data);
+      setError(
+        err.response?.data?.message ||
+          err.response?.data?.title ||
+          "Something went wrong",
+      );
     } finally {
       setLoading(false);
     }
@@ -91,18 +103,7 @@ function InvoiceForm({ onClose, onSuccess }) {
       className="px-6 py-5 flex flex-col gap-4 max-h-[70vh] overflow-y-auto"
     >
       {/* Invoice No + Vendor */}
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="Invoice No *" icon="tag">
-          <input
-            required
-            value={form.invoiceNo}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, invoiceNo: e.target.value }))
-            }
-            placeholder="e.g. PI-2026-001"
-            className={inputCls}
-          />
-        </Field>
+      <div className="grid grid-cols-1 gap-3">
         <Field label="Vendor *" icon="storefront">
           <select
             required
@@ -113,12 +114,16 @@ function InvoiceForm({ onClose, onSuccess }) {
             className={inputCls}
           >
             <option value="">Select vendor</option>
+
             {vendors.map((v) => (
               <option key={v.id} value={v.id}>
                 {v.name}
               </option>
             ))}
           </select>
+          <p className="text-[#555] text-[11px] mt-1">
+            Invoice number will be generated automatically.
+          </p>
         </Field>
       </div>
 

@@ -5,9 +5,9 @@ import {
   searchParts,
   getLowStockParts,
   getAvailableParts,
-} from "../../api/api";
-import PartModal from "../../components/common/Modals/PartModal";
-import PartDetailModal from "../../components/common/Modals/PartDetailModal";
+} from "../../../api/api";
+import PartModal from "./PartModal";
+import PartDetailModal from "./PartDetailModal";
 
 const stockStatus = (qty) => {
   if (qty === 0) return { label: "Out of Stock", cls: "bg-[#333] text-[#888]" };

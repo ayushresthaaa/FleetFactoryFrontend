@@ -83,8 +83,45 @@ export const searchSalesInvoices = ({
   return client.get(`/SalesInvoice/search?${params.toString()}`);
 };
 
+//purchase invoices
+export const getPurchaseInvoices = (pageNumber = 1, pageSize = 10) =>
+  client.get(`/PurchaseInvoice?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+
+export const getPurchaseInvoiceById = (id) =>
+  client.get(`/PurchaseInvoice/${id}`);
+
+export const createPurchaseInvoice = (data) =>
+  client.post("/PurchaseInvoice", data);
+
+export const receivePurchaseInvoice = (id) =>
+  client.patch(`/PurchaseInvoice/${id}/receive`);
+
+export const payPurchaseInvoice = (id) =>
+  client.patch(`/PurchaseInvoice/${id}/status`);
+
+export const cancelPurchaseInvoice = (id) =>
+  client.patch(`/Pur
+    chaseInvoice/${id}/cancel`);
+
 export const getCustomerAppointmentsForInvoice = (customerId) =>
   client.get(`/SalesInvoice/customer/${customerId}/appointments`);
+export const searchPurchaseInvoices = ({
+  query = "",
+  status = null,
+  pageNumber = 1,
+  pageSize = 10,
+} = {}) => {
+  const params = new URLSearchParams();
+
+  if (query) params.append("query", query);
+  if (status !== null && status !== undefined) params.append("status", status);
+
+  params.append("pageNumber", pageNumber);
+  params.append("pageSize", pageSize);
+
+  return client.get(`/PurchaseInvoice/search?${params.toString()}`);
+};
+
 //vendors
 export const getVendors = (pageNumber = 1, pageSize = 100) =>
   client.get(`/Vendors?pageNumber=${pageNumber}&pageSize=${pageSize}`);
@@ -112,18 +149,6 @@ export const getStaffById = (id) => client.get(`/Staff/${id}`);
 export const createStaff = (data) => client.post("/Staff", data);
 export const updateStaff = (id, data) => client.put(`/Staff/${id}`, data);
 export const deactivateStaff = (id) => client.patch(`/Staff/${id}/deactivate`);
-
-//purchase invoices
-export const getPurchaseInvoices = (pageNumber = 1, pageSize = 10) =>
-  client.get(`/PurchaseInvoice?pageNumber=${pageNumber}&pageSize=${pageSize}`);
-export const getPurchaseInvoiceById = (id) =>
-  client.get(`/PurchaseInvoice/${id}`);
-export const createPurchaseInvoice = (data) =>
-  client.post("/PurchaseInvoice", data);
-export const receivePurchaseInvoice = (id) =>
-  client.patch(`/PurchaseInvoice/${id}/receive`);
-export const payPurchaseInvoice = (id) =>
-  client.patch(`/PurchaseInvoice/${id}/pay`);
 
 //reports
 export const getFinancialReport = (type = "daily") =>
