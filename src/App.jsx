@@ -17,10 +17,7 @@ import SalesInvoiceDetail from "./pages/Admin/SalesInvoice/SalesInvoiceDetail";
 const ComingSoon = ({ name }) => (
   <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
     <div className="w-16 h-16 rounded-2xl bg-[rgba(233,30,140,0.1)] border border-[rgba(233,30,140,0.2)] flex items-center justify-center">
-      <span
-        className="material-icons text-[#e91e8c]"
-        style={{ fontSize: "30px" }}
-      >
+      <span className="material-icons text-[#e91e8c]" style={{ fontSize: "30px" }}>
         construction
       </span>
     </div>
@@ -41,26 +38,17 @@ export default function App() {
           <Route path="dashboard" element={<ComingSoon name="Dashboard" />} />
           <Route path="parts" element={<Parts />} />
           <Route path="purchase-invoices" element={<PurchaseInvoices />} />
-          <Route
-            path="purchase-invoices/:id"
-            element={<PurchaseInvoiceDetail />}
-          />
+          <Route path="purchase-invoices/:id" element={<PurchaseInvoiceDetail />} />
           <Route path="vendors" element={<Vendors />} />
           <Route path="staff" element={<Staff />} />
           <Route path="customers" element={<Customers />} />
-          <Route
-            path="search"
-            element={<Navigate to="/admin/customers" replace />}
-          />
+          <Route path="search" element={<Navigate to="/admin/customers" replace />} />
           <Route path="reports" element={<Reports />} />
           <Route path="low-stock" element={<LowStock />} />
           <Route path="part-categories" element={<PartCategories />} />
           <Route path="sales-invoices" element={<SalesInvoices />} />
           <Route path="sales-invoices/:id" element={<SalesInvoiceDetail />} />
-          <Route
-            path="sales-invoices/create"
-            element={<CreateSalesInvoice />}
-          />
+          <Route path="sales-invoices/create" element={<CreateSalesInvoice />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/admin" replace />} />

@@ -1,9 +1,10 @@
 import client from "./client";
-//auth
-export const login = (data) => client.post("/Auth/login", data);
+
+// ─── Auth ────────────────────────────────────────────────────────────────────
+export const login    = (data) => client.post("/Auth/login", data);
 export const register = (data) => client.post("/Auth/register", data);
 
-//parts
+// ─── Parts ───────────────────────────────────────────────────────────────────
 export const getParts = (pageNumber = 1, pageSize = 10) =>
   client.get(`/Parts?pageNumber=${pageNumber}&pageSize=${pageSize}`);
 
@@ -11,16 +12,12 @@ export const getPartById = (id) => client.get(`/Parts/${id}`);
 
 export const createPart = (data) =>
   client.post("/Parts", data, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
+    headers: { "Content-Type": "multipart/form-data" },
   });
 
 export const updatePart = (id, data) =>
   client.put(`/Parts/${id}`, data, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
+    headers: { "Content-Type": "multipart/form-data" },
   });
 
 export const deletePart = (id) => client.delete(`/Parts/${id}`);
@@ -38,7 +35,7 @@ export const getAvailableParts = () => client.get("/Parts/available");
 export const getPartStockMovements = (id) =>
   client.get(`/Parts/${id}/stock-movements`);
 
-//part categories
+// ─── Part Categories ─────────────────────────────────────────────────────────
 export const getPartCategories = () => client.get("/PartCategory");
 
 export const getPartCategoryById = (id) => client.get(`/PartCategory/${id}`);
@@ -50,7 +47,7 @@ export const updatePartCategory = (id, data) =>
 
 export const deletePartCategory = (id) => client.delete(`/PartCategory/${id}`);
 
-// sales invoices
+// ─── Sales Invoices ──────────────────────────────────────────────────────────
 export const getSalesInvoices = (pageNumber = 1, pageSize = 10) =>
   client.get(`/SalesInvoice?pageNumber=${pageNumber}&pageSize=${pageSize}`);
 
@@ -72,18 +69,18 @@ export const searchSalesInvoices = ({
   pageSize = 10,
 } = {}) => {
   const params = new URLSearchParams();
-
-  if (query) params.append("query", query);
+  if (query)                                params.append("query", query);
   if (status !== null && status !== undefined) params.append("status", status);
-  if (mode !== null && mode !== undefined) params.append("mode", mode);
-
+  if (mode   !== null && mode   !== undefined) params.append("mode", mode);
   params.append("pageNumber", pageNumber);
   params.append("pageSize", pageSize);
-
   return client.get(`/SalesInvoice/search?${params.toString()}`);
 };
 
-//purchase invoices
+export const getCustomerAppointmentsForInvoice = (customerId) =>
+  client.get(`/SalesInvoice/customer/${customerId}/appointments`);
+
+// ─── Purchase Invoices ───────────────────────────────────────────────────────
 export const getPurchaseInvoices = (pageNumber = 1, pageSize = 10) =>
   client.get(`/PurchaseInvoice?pageNumber=${pageNumber}&pageSize=${pageSize}`);
 
@@ -100,11 +97,8 @@ export const payPurchaseInvoice = (id) =>
   client.patch(`/PurchaseInvoice/${id}/status`);
 
 export const cancelPurchaseInvoice = (id) =>
-  client.patch(`/Pur
-    chaseInvoice/${id}/cancel`);
+  client.patch(`/PurchaseInvoice/${id}/cancel`);
 
-export const getCustomerAppointmentsForInvoice = (customerId) =>
-  client.get(`/SalesInvoice/customer/${customerId}/appointments`);
 export const searchPurchaseInvoices = ({
   query = "",
   status = null,
@@ -112,48 +106,57 @@ export const searchPurchaseInvoices = ({
   pageSize = 10,
 } = {}) => {
   const params = new URLSearchParams();
-
-  if (query) params.append("query", query);
+  if (query)                                params.append("query", query);
   if (status !== null && status !== undefined) params.append("status", status);
-
   params.append("pageNumber", pageNumber);
   params.append("pageSize", pageSize);
-
   return client.get(`/PurchaseInvoice/search?${params.toString()}`);
 };
 
-//vendors
-export const getVendors = (pageNumber = 1, pageSize = 100) =>
+// ─── Vendors ─────────────────────────────────────────────────────────────────
+export const getVendors    = (pageNumber = 1, pageSize = 100) =>
   client.get(`/Vendors?pageNumber=${pageNumber}&pageSize=${pageSize}`);
-export const getVendorById = (id) => client.get(`/Vendors/${id}`);
-export const createVendor = (data) => client.post("/Vendors", data);
-export const updateVendor = (id, data) => client.put(`/Vendors/${id}`, data);
-export const deleteVendor = (id) => client.delete(`/Vendors/${id}`);
+export const getVendorById = (id)       => client.get(`/Vendors/${id}`);
+export const createVendor  = (data)     => client.post("/Vendors", data);
+export const updateVendor  = (id, data) => client.put(`/Vendors/${id}`, data);
+export const deleteVendor  = (id)       => client.delete(`/Vendors/${id}`);
 
-//customers
+// ─── Customers ───────────────────────────────────────────────────────────────
 export const getCustomers = (pageNumber = 1, pageSize = 10) =>
   client.get(`/Customers?pageNumber=${pageNumber}&pageSize=${pageSize}`);
-export const getCustomerById = (id) => client.get(`/Customers/${id}`);
-export const createCustomer = (data) => client.post("/Customers", data);
-export const addVehicle = (id, data) =>
-  client.post(`/Customers/${id}/vehicles`, data);
-export const getCustomerHistory = (id) =>
-  client.get(`/Customers/${id}/history`);
-export const searchCustomers = (query) =>
+export const getCustomerById = (id)       => client.get(`/Customers/${id}`);
+export const createCustomer  = (data)     => client.post("/Customers", data);
+export const updateCustomer  = (id, data) => client.put(`/Customers/${id}`, data);
+export const deleteCustomer  = (id)       => client.delete(`/Customers/${id}`);
+export const searchCustomers = (query)    =>
   client.get(`/Customers/search?query=${encodeURIComponent(query)}`);
+export const getCustomerHistory = (id)    =>
+  client.get(`/Customers/${id}/history`);
 
-//staff
-export const getStaff = (pageNumber = 1, pageSize = 10) =>
+// ─── Vehicles ────────────────────────────────────────────────────────────────
+export const getVehicles    = (pageNumber = 1, pageSize = 10) =>
+  client.get(`/vehicles?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+export const getVehicleById = (id)       => client.get(`/vehicles/${id}`);
+export const createVehicle  = (data)     => client.post("/vehicles", data);
+export const updateVehicle  = (id, data) => client.put(`/vehicles/${id}`, data);
+export const deleteVehicle  = (id)       => client.delete(`/vehicles/${id}`);
+export const searchVehicles = (query)    =>
+  client.get(`/vehicles/search?query=${encodeURIComponent(query)}`);
+export const addVehicle     = (customerId, data) =>
+  client.post(`/Customers/${customerId}/vehicles`, data);
+
+// ─── Staff ───────────────────────────────────────────────────────────────────
+export const getStaff      = (pageNumber = 1, pageSize = 10) =>
   client.get(`/Staff?pageNumber=${pageNumber}&pageSize=${pageSize}`);
-export const getStaffById = (id) => client.get(`/Staff/${id}`);
-export const createStaff = (data) => client.post("/Staff", data);
-export const updateStaff = (id, data) => client.put(`/Staff/${id}`, data);
-export const deactivateStaff = (id) => client.patch(`/Staff/${id}/deactivate`);
+export const getStaffById  = (id)       => client.get(`/Staff/${id}`);
+export const createStaff   = (data)     => client.post("/Staff", data);
+export const updateStaff   = (id, data) => client.put(`/Staff/${id}`, data);
+export const deactivateStaff = (id)     => client.patch(`/Staff/${id}/deactivate`);
 
-//reports
+// ─── Reports ─────────────────────────────────────────────────────────────────
 export const getFinancialReport = (type = "daily") =>
   client.get(`/reports/financial?type=${type}`);
 
-//low stock check
-export const checkLowStock = () => client.post("/LowStock/check");
+// ─── Low Stock ───────────────────────────────────────────────────────────────
+export const checkLowStock     = () => client.post("/LowStock/check");
 export const getLowStockAlerts = () => client.get("/LowStock/notifications");
