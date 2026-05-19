@@ -5,52 +5,20 @@ const NAV_ITEMS = [
   { label: "Dashboard", path: "/admin/dashboard", icon: "dashboard" },
 
   // inventory
-  { label: "Parts", path: "/admin/parts", icon: "inventory_2" },
-
-  {
-    label: "Part Categories",
-    path: "/admin/part-categories",
-    icon: "category",
-  },
-
-  {
-    label: "Purchase Invoices",
-    path: "/admin/purchase-invoices",
-    icon: "receipt_long",
-  },
-
-  {
-    label: "Sales Invoices",
-    path: "/admin/sales-invoices",
-    icon: "point_of_sale",
-  },
-
-  {
-    label: "Low Stock",
-    path: "/admin/low-stock",
-    icon: "warning",
-    badge: true,
-  },
+  { label: "Parts",             path: "/admin/parts",             icon: "inventory_2"   },
+  { label: "Part Categories",   path: "/admin/part-categories",   icon: "category"      },
+  { label: "Purchase Invoices", path: "/admin/purchase-invoices", icon: "receipt_long"  },
+  { label: "Sales Invoices",    path: "/admin/sales-invoices",    icon: "point_of_sale" },
+  { label: "Low Stock",         path: "/admin/low-stock",         icon: "warning", badge: true },
 
   // business
-  { label: "Vendors", path: "/admin/vendors", icon: "storefront" },
-
-  { label: "Customers", path: "/admin/customers", icon: "group" },
-
-  {
-    label: "Search Customers",
-    path: "/admin/search",
-    icon: "manage_search",
-  },
-
-  { label: "Staff", path: "/admin/staff", icon: "badge" },
+  { label: "Vendors",           path: "/admin/vendors",           icon: "storefront"    },
+  { label: "Customers",         path: "/admin/customers",         icon: "group"         },
+  { label: "Search Customers",  path: "/admin/search",            icon: "manage_search" },
+  { label: "Staff",             path: "/admin/staff",             icon: "badge"         },
 
   // analytics
-  {
-    label: "Financial Reports",
-    path: "/admin/reports",
-    icon: "bar_chart",
-  },
+  { label: "Financial Reports", path: "/admin/reports",           icon: "bar_chart"     },
 ];
 
 export default function Sidebar() {
@@ -74,12 +42,7 @@ export default function Sidebar() {
         `}
       >
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#e91e8c] to-[#c2185b] flex items-center justify-center shrink-0">
-          <span
-            className="material-icons text-white"
-            style={{ fontSize: "18px" }}
-          >
-            bolt
-          </span>
+          <span className="material-icons text-white" style={{ fontSize: "18px" }}>bolt</span>
         </div>
         {!collapsed && (
           <span className="text-white font-bold text-[15px] tracking-wide whitespace-nowrap">
@@ -117,10 +80,7 @@ export default function Sidebar() {
                }`
             }
           >
-            <span
-              className="material-icons shrink-0"
-              style={{ fontSize: "20px" }}
-            >
+            <span className="material-icons shrink-0" style={{ fontSize: "20px" }}>
               {item.icon}
             </span>
             {!collapsed && <span>{item.label}</span>}
@@ -144,12 +104,7 @@ export default function Sidebar() {
           `}
           title={collapsed ? "Settings" : ""}
         >
-          <span
-            className="material-icons shrink-0"
-            style={{ fontSize: "20px" }}
-          >
-            settings
-          </span>
+          <span className="material-icons shrink-0" style={{ fontSize: "20px" }}>settings</span>
           {!collapsed && <span>Settings</span>}
         </button>
 
@@ -166,12 +121,7 @@ export default function Sidebar() {
           `}
           title={collapsed ? "Logout" : ""}
         >
-          <span
-            className="material-icons shrink-0"
-            style={{ fontSize: "20px" }}
-          >
-            logout
-          </span>
+          <span className="material-icons shrink-0" style={{ fontSize: "20px" }}>logout</span>
           {!collapsed && <span>Logout</span>}
         </button>
       </div>
