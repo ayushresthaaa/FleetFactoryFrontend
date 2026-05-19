@@ -24,6 +24,11 @@ const NAV_ITEMS = [
     path: "/admin/sales-invoices",
     icon: "point_of_sale",
   },
+  {
+    label: "Appointments",
+    path: "/admin/appointments",
+    icon: "event",
+  },
 
   {
     label: "Low Stock",

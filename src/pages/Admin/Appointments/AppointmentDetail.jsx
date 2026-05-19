@@ -1,0 +1,408 @@
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  getAppointmentById,
+  confirmAppointment,
+  cancelAppointment,
+} from "../../../api/api";
+
+const STATUS_STYLE = {
+  Pending: "bg-yellow-500/15 text-yellow-400",
+  Confirmed: "bg-blue-500/15 text-blue-400",
+  Completed: "bg-green-500/15 text-green-400",
+  Cancelled: "bg-red-500/15 text-red-400",
+};
+
+const STATUS_ICON = {
+  Pending: "schedule",
+  Confirmed: "event_available",
+  Completed: "check_circle",
+  Cancelled: "cancel",
+};
+
+const formatDate = (date) => {
+  if (!date) return "—";
+  return new Date(date).toLocaleString();
+};
+
+export default function AppointmentDetail() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const [appointment, setAppointment] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [refresh, setRefresh] = useState(0);
+
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const res = await getAppointmentById(id);
+
+        if (cancelled) return;
+
+        setAppointment(res.data?.data ?? null);
+      } catch (err) {
+        if (cancelled) return;
+        setAppointment(null);
+        setError(err.message || "Failed to load appointment.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id, refresh]);
+
+  const handleConfirm = async () => {
+    setActionLoading(true);
+    setError("");
+
+    try {
+      await confirmAppointment(id);
+      setRefresh((r) => r + 1);
+    } catch (err) {
+      setError(err.message || "Failed to confirm appointment.");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    setActionLoading(true);
+    setError("");
+
+    try {
+      await cancelAppointment(id, {
+        reason: cancelReason,
+      });
+
+      setCancelModalOpen(false);
+      setCancelReason("");
+      setRefresh((r) => r + 1);
+    } catch (err) {
+      setError(err.message || "Failed to cancel appointment.");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-24 gap-3">
+        <span
+          className="material-icons text-[#e91e8c] animate-spin"
+          style={{ fontSize: "22px" }}
+        >
+          refresh
+        </span>
+        <span className="text-[#555] text-[13px]">Loading appointment...</span>
+      </div>
+    );
+  }
+
+  if (!appointment) {
+    return (
+      <div className="bg-[#1a1a1a] border border-[#252525] rounded-xl p-8 flex flex-col items-center gap-3">
+        <span
+          className="material-icons text-[#333]"
+          style={{ fontSize: "44px" }}
+        >
+          event_busy
+        </span>
+
+        <p className="text-red-400 text-sm">
+          {error || "Appointment not found."}
+        </p>
+
+        <button
+          onClick={() => navigate("/admin/appointments")}
+          className="px-4 py-2 rounded-lg bg-[#e91e8c] text-white text-sm font-semibold"
+        >
+          Back to appointments
+        </button>
+      </div>
+    );
+  }
+
+  const status = appointment.status || "Pending";
+
+  return (
+    <div className="flex flex-col gap-5">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-white text-xl font-bold m-0">
+              Appointment Details
+            </h1>
+
+            <span
+              className={`flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full ${
+                STATUS_STYLE[status] ?? "bg-[#333] text-[#888]"
+              }`}
+            >
+              <span className="material-icons" style={{ fontSize: "12px" }}>
+                {STATUS_ICON[status] ?? "help"}
+              </span>
+              {status}
+            </span>
+          </div>
+
+          <p className="text-[#777] text-sm mt-1">
+            Scheduled {formatDate(appointment.scheduledAt)}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate("/admin/appointments")}
+            className="px-4 py-2 rounded-lg border border-[#333] text-[#aaa] hover:text-white bg-transparent text-sm"
+          >
+            Back
+          </button>
+
+          {status === "Pending" && (
+            <button
+              onClick={handleConfirm}
+              disabled={actionLoading}
+              className="px-4 py-2 rounded-lg border border-blue-500/30 text-blue-400 hover:bg-blue-500/10 bg-transparent text-sm disabled:opacity-50"
+            >
+              {actionLoading ? "..." : "Confirm"}
+            </button>
+          )}
+
+          {(status === "Pending" || status === "Confirmed") && (
+            <button
+              onClick={() => setCancelModalOpen(true)}
+              disabled={actionLoading}
+              className="px-4 py-2 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 bg-transparent text-sm disabled:opacity-50"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
+      </div>
+
+      {error && (
+        <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-lg px-3 py-2">
+          {error}
+        </div>
+      )}
+
+      <div className="grid grid-cols-[1fr_340px] gap-5">
+        <div className="flex flex-col gap-5">
+          <Section title="Customer Information">
+            <div className="grid grid-cols-2 gap-3">
+              <Info
+                label="Customer Name"
+                value={appointment.customerName || "—"}
+              />
+              <Info label="Phone" value={appointment.customerPhone || "—"} />
+              <Info label="Email" value={appointment.customerEmail || "—"} />
+              <Info label="Customer ID" value={appointment.customerId || "—"} />
+            </div>
+          </Section>
+
+          <Section title="Vehicle Information">
+            <div className="grid grid-cols-2 gap-3">
+              <Info
+                label="Vehicle Number"
+                value={appointment.vehicleNumber || "—"}
+              />
+              <Info label="Vehicle ID" value={appointment.vehicleId || "—"} />
+            </div>
+          </Section>
+
+          <Section title="Issue / Service Request">
+            <div className="bg-[#111] border border-[#252525] rounded-lg px-4 py-3 min-h-[110px]">
+              <p className="text-[#ddd] text-sm leading-6 m-0">
+                {appointment.issueDescription ||
+                  appointment.notes ||
+                  "No issue description provided."}
+              </p>
+            </div>
+          </Section>
+
+          {appointment.cancelReason && (
+            <Section title="Cancellation Reason">
+              <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
+                <p className="text-red-400 text-sm leading-6 m-0">
+                  {appointment.cancelReason}
+                </p>
+              </div>
+            </Section>
+          )}
+        </div>
+
+        <div className="bg-[#1a1a1a] border border-[#252525] rounded-xl p-5 h-fit sticky top-5">
+          <h3 className="text-white text-sm font-semibold mb-4">
+            Appointment Summary
+          </h3>
+
+          <Summary label="Status" value={status} strong />
+          <Summary
+            label="Scheduled At"
+            value={formatDate(appointment.scheduledAt)}
+          />
+          <Summary
+            label="Created At"
+            value={formatDate(appointment.createdAt)}
+          />
+          <Summary
+            label="Updated At"
+            value={formatDate(appointment.updatedAt)}
+          />
+
+          <div className="mt-5 bg-[#111] border border-[#252525] rounded-lg px-3 py-3">
+            <div className="text-[#666] text-xs">Current Status</div>
+
+            <div className="flex items-center gap-2 mt-2">
+              <span
+                className={`material-icons ${
+                  status === "Completed"
+                    ? "text-green-400"
+                    : status === "Confirmed"
+                      ? "text-blue-400"
+                      : status === "Pending"
+                        ? "text-yellow-400"
+                        : "text-red-400"
+                }`}
+                style={{ fontSize: "18px" }}
+              >
+                {STATUS_ICON[status] ?? "help"}
+              </span>
+
+              <span className="text-white text-sm font-medium">{status}</span>
+            </div>
+          </div>
+
+          {status === "Pending" && (
+            <button
+              onClick={handleConfirm}
+              disabled={actionLoading}
+              className="w-full mt-4 flex items-center justify-center gap-2 py-2.5 rounded-lg border border-blue-500/30 text-blue-400 hover:bg-blue-500/10 bg-transparent text-sm transition-colors disabled:opacity-50"
+            >
+              <span className="material-icons" style={{ fontSize: "16px" }}>
+                event_available
+              </span>
+              {actionLoading ? "Confirming..." : "Confirm Appointment"}
+            </button>
+          )}
+
+          {(status === "Pending" || status === "Confirmed") && (
+            <button
+              onClick={() => setCancelModalOpen(true)}
+              disabled={actionLoading}
+              className="w-full mt-2 flex items-center justify-center gap-2 py-2.5 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 bg-transparent text-sm transition-colors disabled:opacity-50"
+            >
+              <span className="material-icons" style={{ fontSize: "16px" }}>
+                cancel
+              </span>
+              Cancel Appointment
+            </button>
+          )}
+        </div>
+      </div>
+
+      {cancelModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          onClick={(e) =>
+            e.target === e.currentTarget && setCancelModalOpen(false)
+          }
+        >
+          <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl w-full max-w-md mx-4 shadow-2xl">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#252525]">
+              <div>
+                <h2 className="text-white text-[15px] font-semibold m-0">
+                  Cancel Appointment
+                </h2>
+                <p className="text-[#555] text-[11px] m-0">
+                  Provide cancellation reason
+                </p>
+              </div>
+
+              <button
+                onClick={() => setCancelModalOpen(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-lg text-[#555] hover:text-white hover:bg-[#252525] transition-colors bg-transparent border-none"
+              >
+                <span className="material-icons" style={{ fontSize: "18px" }}>
+                  close
+                </span>
+              </button>
+            </div>
+
+            <div className="p-6 flex flex-col gap-4">
+              <textarea
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder="Enter cancellation reason..."
+                rows={4}
+                className="w-full bg-[#111] border border-[#2a2a2a] rounded-lg px-3 py-2 text-white text-[13px] outline-none focus:border-[#e91e8c] resize-none"
+              />
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setCancelModalOpen(false);
+                    setCancelReason("");
+                  }}
+                  className="flex-1 py-2.5 rounded-lg border border-[#2a2a2a] text-[#888] hover:text-white hover:border-[#444] text-[13px] font-medium transition-colors bg-transparent"
+                >
+                  Close
+                </button>
+
+                <button
+                  onClick={handleCancel}
+                  disabled={actionLoading}
+                  className="flex-1 py-2.5 rounded-lg bg-red-500 text-white text-[13px] font-semibold hover:opacity-90 transition-opacity border-none disabled:opacity-50"
+                >
+                  {actionLoading ? "Cancelling..." : "Cancel Appointment"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const Section = ({ title, children }) => (
+  <div className="bg-[#1a1a1a] border border-[#252525] rounded-xl p-5 flex flex-col gap-3">
+    <h2 className="text-white text-sm font-semibold m-0">{title}</h2>
+    {children}
+  </div>
+);
+
+const Info = ({ label, value }) => (
+  <div className="bg-[#111] border border-[#252525] rounded-lg px-3 py-2">
+    <div className="text-[#666] text-xs">{label}</div>
+    <div className="text-white text-sm font-medium mt-1 break-words">
+      {value}
+    </div>
+  </div>
+);
+
+const Summary = ({ label, value, strong }) => (
+  <div className="flex justify-between py-1.5 gap-4">
+    <span className="text-[#777] text-sm">{label}</span>
+    <span className={strong ? "text-white font-bold" : "text-[#ddd] text-sm"}>
+      {value || "—"}
+    </span>
+  </div>
+);

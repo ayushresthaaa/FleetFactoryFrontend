@@ -122,6 +122,33 @@ export const searchPurchaseInvoices = ({
   return client.get(`/PurchaseInvoice/search?${params.toString()}`);
 };
 
+// appointments - admin/staff
+export const getAppointments = (pageNumber = 1, pageSize = 10) =>
+  client.get(`/appointments?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+
+export const getAppointmentById = (id) => client.get(`/appointments/${id}`);
+
+export const searchAppointments = ({
+  query,
+  status,
+  pageNumber = 1,
+  pageSize = 10,
+}) =>
+  client.get("/appointments/search", {
+    params: {
+      query,
+      status,
+      pageNumber,
+      pageSize,
+    },
+  });
+
+export const confirmAppointment = (id) =>
+  client.patch(`/appointments/${id}/confirm`);
+
+export const cancelAppointment = (id, data) =>
+  client.patch(`/appointments/${id}/cancel`, data);
+
 //vendors
 export const getVendors = (pageNumber = 1, pageSize = 100) =>
   client.get(`/Vendors?pageNumber=${pageNumber}&pageSize=${pageSize}`);
