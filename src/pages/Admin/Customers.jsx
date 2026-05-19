@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { getCustomers, searchCustomers, getVehicles, searchVehicles } from "../../api/api";
 import CustomerModal from "../../components/common/Modals/CustomerModal";
 import CustomerHistoryModal from "../../components/common/Modals/CustomerHistoryModal";
-// import VehicleModal from "../../components/common/Modals/VehicleModal";
+import VehicleModal from "../../components/common/Modals/VehicleModal";
 
 const FUEL_COLOR = {
   Petrol:   { text: "#f59e0b", bg: "rgba(245,158,11,0.1)",  border: "rgba(245,158,11,0.2)"  },
