@@ -29,7 +29,11 @@ const NAV_ITEMS = [
     path: "/admin/appointments",
     icon: "event",
   },
-
+  {
+    label: "Part Requests",
+    path: "/admin/part-requests",
+    icon: "assignment",
+  },
   {
     label: "Low Stock",
     path: "/admin/low-stock",

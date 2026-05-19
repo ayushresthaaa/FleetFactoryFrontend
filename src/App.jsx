@@ -16,6 +16,8 @@ import CreateSalesInvoice from "./pages/Admin/SalesInvoice/CreateSalesInvoice";
 import SalesInvoiceDetail from "./pages/Admin/SalesInvoice/SalesInvoiceDetail";
 import Appointments from "./pages/Admin/Appointments/Appointments";
 import AppointmentDetail from "./pages/Admin/Appointments/AppointmentDetail";
+import PartRequests from "./pages/Admin/PartsRequest/PartsRequests";
+import PartRequestDetail from "./pages/Admin/PartsRequest/PartRequestDetail";
 
 const ComingSoon = ({ name }) => (
   <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
@@ -67,6 +69,8 @@ export default function App() {
           <Route path="customers" element={<Customers />} />
           <Route path="appointments" element={<Appointments />} />
           <Route path="appointments/:id" element={<AppointmentDetail />} />
+          <Route path="part-requests" element={<PartRequests />} />
+          <Route path="part-requests/:id" element={<PartRequestDetail />} />
           <Route
             path="search"
             element={<Navigate to="/admin/customers" replace />}

@@ -149,6 +149,33 @@ export const confirmAppointment = (id) =>
 export const cancelAppointment = (id, data) =>
   client.patch(`/appointments/${id}/cancel`, data);
 
+// part requests - admin/staff
+export const getPartRequests = (pageNumber = 1, pageSize = 10) =>
+  client.get(`/part-requests?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+
+export const getPartRequestById = (id) => client.get(`/part-requests/${id}`);
+
+export const searchPartRequests = ({
+  query = "",
+  status = null,
+  pageNumber = 1,
+  pageSize = 10,
+} = {}) =>
+  client.get("/part-requests/search", {
+    params: {
+      query,
+      status,
+      pageNumber,
+      pageSize,
+    },
+  });
+
+export const markPartRequestSourced = (id, data) =>
+  client.patch(`/part-requests/${id}/sourced`, data);
+
+export const rejectPartRequest = (id, data) =>
+  client.patch(`/part-requests/${id}/reject`, data);
+
 //vendors
 export const getVendors = (pageNumber = 1, pageSize = 100) =>
   client.get(`/Vendors?pageNumber=${pageNumber}&pageSize=${pageSize}`);
