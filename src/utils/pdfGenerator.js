@@ -175,3 +175,143 @@ export function generatePurchaseInvoicePDF(invoice) {
   // ── Save ─────────────────────────────────────────────────
   doc.save(`PurchaseInvoice-${invoice.invoiceNo ?? "export"}.pdf`);
 }
+
+export function generateReportsPDF(report) {
+  const {
+    from,
+    to,
+    financial,
+    profit,
+    revenueTrend = [],
+    paymentMethods = [],
+    topParts = [],
+    highSpenders = [],
+    regularCustomers = [],
+    pendingCredits = [],
+    frequentVehicles = [],
+    appointmentStats = [],
+  } = report;
+
+  const money = (v) => `Rs. ${Number(v ?? 0).toLocaleString()}`;
+
+  const doc = new jsPDF();
+  const pink = [233, 30, 140];
+  const dark = [26, 26, 26];
+  const grey = [100, 100, 100];
+
+  const pageW = doc.internal.pageSize.getWidth();
+
+  doc.setFillColor(...dark);
+  doc.rect(0, 0, pageW, 45, "F");
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(20);
+  doc.setFont("helvetica", "bold");
+  doc.text("FleetFactory", 14, 18);
+
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(150, 150, 150);
+  doc.text("Vehicle Parts & Inventory Management", 14, 25);
+
+  doc.setTextColor(...pink);
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "bold");
+  doc.text("BUSINESS REPORT", pageW - 14, 18, { align: "right" });
+
+  doc.setTextColor(200, 200, 200);
+  doc.setFontSize(9);
+  doc.text(`${from} to ${to}`, pageW - 14, 25, { align: "right" });
+
+  doc.setDrawColor(...pink);
+  doc.setLineWidth(0.8);
+  doc.line(0, 45, pageW, 45);
+
+  autoTable(doc, {
+    startY: 58,
+    head: [["Metric", "Value"]],
+    body: [
+      ["Total Revenue", money(financial?.totalRevenue)],
+      ["Total Purchases", money(financial?.totalPurchases)],
+      ["Net Profit", money(financial?.netProfit)],
+      ["Sales Invoices", financial?.salesInvoiceCount ?? 0],
+      ["Purchase Invoices", financial?.purchaseInvoiceCount ?? 0],
+      [profit?.label || "Profit Estimate", money(profit?.value)],
+    ],
+    theme: "grid",
+    headStyles: {
+      fillColor: dark,
+      textColor: [255, 255, 255],
+      fontStyle: "bold",
+    },
+  });
+
+  const addTable = (title, rows) => {
+    if (!rows || rows.length === 0) return;
+
+    const titleY = doc.lastAutoTable.finalY + 12;
+
+    doc.setTextColor(...pink);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text(title, 14, titleY);
+
+    autoTable(doc, {
+      startY: titleY + 4,
+      head: [["Name / Label", "Value", "Count"]],
+      body: rows.map((r) => [
+        r.name ?? r.label ?? "—",
+        money(r.value),
+        r.count ?? "—",
+      ]),
+      theme: "grid",
+      headStyles: {
+        fillColor: dark,
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+      },
+      bodyStyles: {
+        fontSize: 8.5,
+      },
+      margin: { left: 14, right: 14 },
+    });
+  };
+
+  addTable("Revenue Trend", revenueTrend);
+  addTable("Payment Methods", paymentMethods);
+  addTable("Appointment Stats", appointmentStats);
+  addTable("Top Selling Parts", topParts);
+  addTable("High Spenders", highSpenders);
+  addTable("Regular Customers", regularCustomers);
+  addTable("Frequent Vehicles", frequentVehicles);
+
+  if (pendingCredits.length > 0) {
+    const titleY = doc.lastAutoTable.finalY + 12;
+
+    doc.setTextColor(...pink);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("Pending Credits", 14, titleY);
+
+    autoTable(doc, {
+      startY: titleY + 4,
+      head: [["Customer", "Phone", "Credit Balance"]],
+      body: pendingCredits.map((r) => [
+        r.customerName ?? "—",
+        r.phone ?? "—",
+        money(r.creditBalance),
+      ]),
+      theme: "grid",
+      headStyles: {
+        fillColor: dark,
+        textColor: [255, 255, 255],
+      },
+    });
+  }
+
+  doc.setTextColor(...grey);
+  doc.setFontSize(7.5);
+  doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 285);
+
+  doc.save(`FleetFactory-Report-${from}-to-${to}.pdf`);
+}

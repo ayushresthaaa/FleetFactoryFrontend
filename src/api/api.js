@@ -83,6 +83,9 @@ export const searchSalesInvoices = ({
   return client.get(`/SalesInvoice/search?${params.toString()}`);
 };
 
+export const sendSalesInvoiceEmail = (id) =>
+  client.post(`/SalesInvoice/${id}/send-email`);
+
 //purchase invoices
 export const getPurchaseInvoices = (pageNumber = 1, pageSize = 10) =>
   client.get(`/PurchaseInvoice?pageNumber=${pageNumber}&pageSize=${pageSize}`);
@@ -341,5 +344,4 @@ export const sendAllOverdueCreditReminders = () =>
   client.post("/overdue-credits/send-reminders");
 
 //low stock check
-export const checkLowStock = () => client.post("/LowStock/check");
-export const getLowStockAlerts = () => client.get("/LowStock/notifications");
+export const checkLowStock = () => client.post("/low-stock/check");

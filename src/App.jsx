@@ -32,6 +32,7 @@ import CustomerProfile from "./pages/Customer/Profile/CustomerProfile";
 import AccountSettings from "./pages/Account/AccountSettings";
 import CustomerDetail from "./pages/Admin/Customer/CustomerDetail";
 import Dashboard from "./pages/Admin/Dashboard";
+import Home from "./pages/Customer/Home";
 const ComingSoon = ({ name }) => (
   <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
     <div className="w-16 h-16 rounded-2xl bg-[rgba(233,30,140,0.1)] border border-[rgba(233,30,140,0.2)] flex items-center justify-center">
@@ -94,7 +95,7 @@ export default function App() {
           <Route path="reports" element={<Reports />} />
         </Route>
         <Route path="/customer" element={<CustomerLayout />}>
-          {/* <Route index element={<ComingSoon name="Customer Home" />} /> */}
+          <Route index element={<Home />} />
 
           <Route path="appointments" element={<CustomerAppointments />} />
           <Route path="appointments/history" element={<AppointmentHistory />} />

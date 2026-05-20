@@ -51,12 +51,6 @@ const NAV_ITEMS = [
 
   { label: "Customers", path: "/admin/customers", icon: "group" },
 
-  {
-    label: "Search Customers",
-    path: "/admin/search",
-    icon: "manage_search",
-  },
-
   { label: "Staff", path: "/admin/staff", icon: "badge" },
 
   // analytics

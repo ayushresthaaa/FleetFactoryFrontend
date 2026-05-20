@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createMyReview, getMyAppointmentHistory } from "../../../api/api";
-import { AppointmentStatus } from "../../../constants/constantsHelpers";
+// import { AppointmentStatus } from "../../../constants/constantsHelpers";
 
 export default function CreateReview() {
   const [form, setForm] = useState({
@@ -24,7 +24,7 @@ export default function CreateReview() {
         const list = Array.isArray(data) ? data : data?.items || [];
         console.log("Fetched appointments:", list);
         setAppointments(
-          list.filter((a) => a.status === AppointmentStatus.Completed),
+          list.filter((a) => String(a.status).toLowerCase() === "completed"),
         );
       } catch {
         setError("Failed to load completed appointments.");

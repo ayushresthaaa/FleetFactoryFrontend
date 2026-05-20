@@ -4,6 +4,7 @@ import {
   searchSalesInvoices,
   markSalesInvoicePaid,
   cancelSalesInvoice,
+  sendSalesInvoiceEmail,
 } from "../../../api/api";
 import {
   InvoiceStatus,
@@ -29,10 +30,13 @@ export default function SalesInvoice() {
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(0);
   const [actionLoadingId, setActionLoadingId] = useState(null);
+  const [emailLoadingId, setEmailLoadingId] = useState(null);
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [modeFilter, setModeFilter] = useState("all");
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
   const pageSize = 10;
 
@@ -102,6 +106,21 @@ export default function SalesInvoice() {
     }
   };
 
+  const handleSendEmail = async (id) => {
+    setEmailLoadingId(id);
+    setError("");
+    setSuccess("");
+
+    try {
+      await sendSalesInvoiceEmail(id);
+      setSuccess("Invoice email sent successfully.");
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to send invoice email.");
+    } finally {
+      setEmailLoadingId(null);
+    }
+  };
+
   const totalPages = Math.ceil(totalCount / pageSize);
 
   const paidCount = invoices.filter((i) => i.status === "Paid").length;
@@ -115,6 +134,18 @@ export default function SalesInvoice() {
 
   return (
     <div className="flex flex-col gap-5">
+      {error && (
+        <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-lg px-3 py-2">
+          {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="bg-green-500/10 border border-green-500/20 text-green-400 text-xs rounded-lg px-3 py-2">
+          {success}
+        </div>
+      )}
+
       <div className="flex items-center gap-3">
         <div className="flex-1 flex items-center gap-2">
           <div className="relative w-[340px]">
@@ -294,6 +325,7 @@ export default function SalesInvoice() {
               <tbody>
                 {invoices.map((invoice) => {
                   const loadingAction = actionLoadingId === invoice.id;
+                  const loadingEmail = emailLoadingId === invoice.id;
                   const mode = invoice.appointmentId ? "Appointment" : "Direct";
 
                   return (
@@ -359,6 +391,14 @@ export default function SalesInvoice() {
                             >
                               visibility
                             </span>
+                          </button>
+
+                          <button
+                            onClick={() => handleSendEmail(invoice.id)}
+                            disabled={loadingEmail}
+                            className="h-7 px-2 flex items-center justify-center rounded-lg text-[11px] text-[#e91e8c] hover:bg-[#e91e8c]/10 transition-colors cursor-pointer bg-transparent border border-[#e91e8c]/20 disabled:opacity-50"
+                          >
+                            {loadingEmail ? "Sending..." : "Email"}
                           </button>
 
                           {(invoice.status === "Pending" ||

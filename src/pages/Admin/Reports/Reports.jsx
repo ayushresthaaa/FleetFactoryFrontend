@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+
 import {
   getFinancialSummary,
   getRevenueTrend,
@@ -77,12 +80,14 @@ export default function Reports() {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     let cancelled = false;
 
     const loadInitialReports = async () => {
       try {
+        setLoading(true);
+        setError("");
+
         const [
           financialRes,
           profitRes,
@@ -123,6 +128,10 @@ export default function Reports() {
         if (!cancelled) {
           setError(err.message || "Failed to load reports.");
         }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
@@ -132,14 +141,163 @@ export default function Reports() {
       cancelled = true;
     };
   }, []);
+  const handleGeneratePDF = () => {
+    const doc = new jsPDF();
+    const pageW = doc.internal.pageSize.getWidth();
 
-  const handlePrint = () => {
-    window.print();
+    const pink = [233, 30, 140];
+    const dark = [26, 26, 26];
+    const grey = [100, 100, 100];
+    const light = [240, 240, 240];
+
+    doc.setFillColor(...dark);
+    doc.rect(0, 0, pageW, 45, "F");
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(20);
+    doc.setFont("helvetica", "bold");
+    doc.text("FleetFactory", 14, 18);
+
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(150, 150, 150);
+    doc.text("Vehicle Parts & Inventory Management", 14, 25);
+
+    doc.setTextColor(...pink);
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "bold");
+    doc.text("BUSINESS REPORT", pageW - 14, 18, { align: "right" });
+
+    doc.setTextColor(200, 200, 200);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${from} to ${to}`, pageW - 14, 25, { align: "right" });
+
+    doc.setDrawColor(...pink);
+    doc.setLineWidth(0.8);
+    doc.line(0, 45, pageW, 45);
+
+    let y = 58;
+
+    autoTable(doc, {
+      startY: y,
+      head: [["Metric", "Value"]],
+      body: [
+        ["Total Revenue", money(financial?.totalRevenue)],
+        ["Total Purchases", money(financial?.totalPurchases)],
+        ["Net Profit", money(financial?.netProfit)],
+        ["Sales Invoices", financial?.salesInvoiceCount ?? 0],
+        ["Purchase Invoices", financial?.purchaseInvoiceCount ?? 0],
+        [profit?.label || "Profit Estimate", money(profit?.value)],
+      ],
+      theme: "grid",
+      headStyles: {
+        fillColor: dark,
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+      },
+      bodyStyles: {
+        fontSize: 9,
+      },
+      margin: { left: 14, right: 14 },
+    });
+
+    const addTable = (title, rows) => {
+      if (!rows || rows.length === 0) return;
+
+      const startTitleY = doc.lastAutoTable.finalY + 12;
+
+      doc.setFontSize(12);
+      doc.setTextColor(...pink);
+      doc.setFont("helvetica", "bold");
+      doc.text(title, 14, startTitleY);
+
+      autoTable(doc, {
+        startY: startTitleY + 4,
+        head: [["Name / Label", "Value", "Count"]],
+        body: rows.map((r) => [
+          r.name ?? r.label ?? "—",
+          money(r.value),
+          r.count ?? "—",
+        ]),
+        theme: "grid",
+        headStyles: {
+          fillColor: dark,
+          textColor: [255, 255, 255],
+          fontStyle: "bold",
+          fontSize: 8.5,
+        },
+        bodyStyles: {
+          fontSize: 8.5,
+          textColor: [40, 40, 40],
+        },
+        alternateRowStyles: {
+          fillColor: [250, 250, 250],
+        },
+        margin: { left: 14, right: 14 },
+      });
+    };
+
+    addTable("Revenue Trend", revenueTrend);
+    addTable("Payment Methods", paymentMethods);
+    addTable("Appointment Stats", appointmentStats);
+    addTable("Top Selling Parts", topParts);
+    addTable("High Spenders", highSpenders);
+    addTable("Regular Customers", regularCustomers);
+    addTable("Frequent Vehicles", frequentVehicles);
+
+    if (pendingCredits.length > 0) {
+      const startTitleY = doc.lastAutoTable.finalY + 12;
+
+      doc.setFontSize(12);
+      doc.setTextColor(...pink);
+      doc.setFont("helvetica", "bold");
+      doc.text("Pending Credits", 14, startTitleY);
+
+      autoTable(doc, {
+        startY: startTitleY + 4,
+        head: [["Customer", "Phone", "Credit Balance"]],
+        body: pendingCredits.map((r) => [
+          r.customerName ?? "—",
+          r.phone ?? "—",
+          money(r.creditBalance),
+        ]),
+        theme: "grid",
+        headStyles: {
+          fillColor: dark,
+          textColor: [255, 255, 255],
+          fontStyle: "bold",
+        },
+        bodyStyles: {
+          fontSize: 8.5,
+        },
+        margin: { left: 14, right: 14 },
+      });
+    }
+
+    const footerY = doc.internal.pageSize.getHeight() - 14;
+    doc.setDrawColor(...light);
+    doc.setLineWidth(0.3);
+    doc.line(14, footerY - 6, pageW - 14, footerY - 6);
+
+    doc.setTextColor(...grey);
+    doc.setFontSize(7.5);
+    doc.setFont("helvetica", "normal");
+    doc.text(
+      "FleetFactory — Vehicle Parts & Inventory Management System",
+      14,
+      footerY,
+    );
+    doc.text(`Generated: ${new Date().toLocaleString()}`, pageW - 14, footerY, {
+      align: "right",
+    });
+
+    doc.save(`FleetFactory-Report-${from}-to-${to}.pdf`);
   };
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex items-center justify-between print:hidden">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-white text-2xl font-bold">Reports</h1>
           <p className="text-[#666] text-sm mt-1">
@@ -148,14 +306,14 @@ export default function Reports() {
         </div>
 
         <button
-          onClick={handlePrint}
+          onClick={handleGeneratePDF}
           className="px-4 py-2 rounded-lg bg-[#e91e8c] text-white text-sm font-semibold"
         >
           Generate PDF
         </button>
       </div>
 
-      <div className="bg-[#1a1a1a] border border-[#252525] rounded-xl p-5 flex items-end gap-3 print:hidden">
+      <div className="bg-[#1a1a1a] border border-[#252525] rounded-xl p-5 flex items-end gap-3">
         <Field label="From">
           <input
             type="date"
@@ -189,7 +347,7 @@ export default function Reports() {
         </div>
       )}
 
-      <div id="report-content" className="flex flex-col gap-5">
+      <div className="flex flex-col gap-5">
         <div>
           <h2 className="text-white text-lg font-semibold">Report Summary</h2>
           <p className="text-[#777] text-sm">
@@ -267,8 +425,8 @@ const ChartSection = ({ title, rows }) => (
       <Empty text="No data available." />
     ) : (
       <div className="p-5 flex flex-col gap-3">
-        {rows.map((r) => (
-          <div key={r.label}>
+        {rows.map((r, index) => (
+          <div key={`${r.label}-${index}`}>
             <div className="flex justify-between text-xs mb-1">
               <span className="text-[#aaa]">{r.label}</span>
               <span className="text-white font-semibold">{money(r.value)}</span>

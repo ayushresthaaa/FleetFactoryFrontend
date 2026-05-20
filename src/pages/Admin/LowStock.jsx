@@ -1,44 +1,37 @@
 import { useState, useEffect } from "react";
-import { getParts, checkLowStock } from "../../api/api";
+import { getParts } from "../../api/api";
 
 export default function LowStock() {
   const [parts, setParts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [checking, setChecking] = useState(false);
-  const [checked, setChecked] = useState(false);
   const [refresh, setRefresh] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
+
     async function load() {
       setLoading(true);
+
       try {
-        // Get all parts and filter low stock on frontend
         const res = await getParts(1, 100);
         const all = res.data?.data?.items ?? [];
-        if (!cancelled) setParts(all.filter((p) => p.stockQty < 10));
+
+        if (!cancelled) {
+          setParts(all.filter((p) => p.stockQty < 10));
+        }
       } catch {
         if (!cancelled) setParts([]);
       } finally {
         if (!cancelled) setLoading(false);
       }
     }
+
     load();
+
     return () => {
       cancelled = true;
     };
   }, [refresh]);
-
-  const handleCheck = async () => {
-    setChecking(true);
-    try {
-      await checkLowStock();
-      setChecked(true);
-      setRefresh((r) => r + 1);
-    } finally {
-      setChecking(false);
-    }
-  };
 
   const outOfStock = parts.filter((p) => p.stockQty === 0);
   const critical = parts.filter((p) => p.stockQty > 0 && p.stockQty <= 5);
@@ -46,7 +39,6 @@ export default function LowStock() {
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Alert banner */}
       {parts.length > 0 && (
         <div className="flex items-center gap-3 bg-[rgba(233,30,140,0.08)] border border-[rgba(233,30,140,0.2)] rounded-xl px-5 py-4">
           <span
@@ -55,52 +47,30 @@ export default function LowStock() {
           >
             warning
           </span>
+
           <div className="flex-1">
             <div className="text-white text-[14px] font-semibold">
               {parts.length} parts need attention
             </div>
+
             <div className="text-[#888] text-[12px]">
               {outOfStock.length} out of stock · {critical.length} critical (≤5)
               · {low.length} low (6–9)
             </div>
           </div>
+
           <button
-            onClick={handleCheck}
-            disabled={checking}
-            className="flex items-center gap-2 bg-[#e91e8c] text-white text-[12px] font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition-opacity cursor-pointer border-none disabled:opacity-50"
+            onClick={() => setRefresh((r) => r + 1)}
+            className="flex items-center gap-2 bg-[#e91e8c] text-white text-[12px] font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition-opacity cursor-pointer border-none"
           >
-            {checking ? (
-              <span
-                className="material-icons animate-spin"
-                style={{ fontSize: "15px" }}
-              >
-                refresh
-              </span>
-            ) : (
-              <span className="material-icons" style={{ fontSize: "15px" }}>
-                notifications_active
-              </span>
-            )}
-            {checking ? "Notifying..." : "Send Notifications"}
+            <span className="material-icons" style={{ fontSize: "15px" }}>
+              refresh
+            </span>
+            Refresh
           </button>
         </div>
       )}
 
-      {checked && (
-        <div className="flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-3">
-          <span
-            className="material-icons text-green-400"
-            style={{ fontSize: "16px" }}
-          >
-            check_circle
-          </span>
-          <span className="text-green-400 text-[13px]">
-            Admin notifications sent for all low stock parts
-          </span>
-        </div>
-      )}
-
-      {/* Stat cards */}
       <div className="grid grid-cols-3 gap-4">
         {[
           {
@@ -140,6 +110,7 @@ export default function LowStock() {
                 {s.icon}
               </span>
             </div>
+
             <div>
               <div className="text-white text-xl font-bold leading-tight">
                 {s.value}
@@ -152,12 +123,12 @@ export default function LowStock() {
         ))}
       </div>
 
-      {/* Table */}
       <div className="bg-[#1a1a1a] border border-[#252525] rounded-xl overflow-hidden">
         <div className="px-5 py-3.5 border-b border-[#252525] flex items-center justify-between">
           <h3 className="text-white text-[14px] font-semibold m-0">
             Low Stock Parts
           </h3>
+
           <button
             onClick={() => setRefresh((r) => r + 1)}
             className="flex items-center gap-1.5 text-[#555] hover:text-[#ccc] text-[12px] transition-colors cursor-pointer bg-transparent border-none"
@@ -217,6 +188,7 @@ export default function LowStock() {
                   ))}
                 </tr>
               </thead>
+
               <tbody>
                 {parts
                   .sort((a, b) => a.stockQty - b.stockQty)
@@ -250,28 +222,39 @@ export default function LowStock() {
                             {part.sku}
                           </span>
                         </td>
+
                         <td className="px-5 py-3.5">
                           <span className="text-white text-[13px] font-medium">
                             {part.name}
                           </span>
                         </td>
+
                         <td className="px-5 py-3.5">
                           <span className="text-[#888] text-[12px]">
                             {part.categoryName ?? "—"}
                           </span>
                         </td>
+
                         <td className="px-5 py-3.5">
                           <span className="text-[#888] text-[12px]">
                             {part.vendorName ?? "—"}
                           </span>
                         </td>
+
                         <td className="px-5 py-3.5">
                           <span
-                            className={`text-[15px] font-bold ${part.stockQty === 0 ? "text-red-400" : part.stockQty <= 5 ? "text-yellow-400" : "text-blue-400"}`}
+                            className={`text-[15px] font-bold ${
+                              part.stockQty === 0
+                                ? "text-red-400"
+                                : part.stockQty <= 5
+                                  ? "text-yellow-400"
+                                  : "text-blue-400"
+                            }`}
                           >
                             {part.stockQty}
                           </span>
                         </td>
+
                         <td className="px-5 py-3.5">
                           <span
                             className={`flex items-center gap-1.5 w-fit text-[11px] font-semibold px-2.5 py-1 rounded-full ${severity.cls}`}
@@ -285,6 +268,7 @@ export default function LowStock() {
                             {severity.label}
                           </span>
                         </td>
+
                         <td className="px-5 py-3.5">
                           <a
                             href="/admin/purchase-invoices"
