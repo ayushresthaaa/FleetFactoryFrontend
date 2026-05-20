@@ -35,6 +35,11 @@ const NAV_ITEMS = [
     icon: "assignment",
   },
   {
+    label: "Reviews",
+    path: "/admin/reviews",
+    icon: "rate_review",
+  },
+  {
     label: "Low Stock",
     path: "/admin/low-stock",
     icon: "warning",

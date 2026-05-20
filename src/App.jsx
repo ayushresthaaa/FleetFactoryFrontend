@@ -7,7 +7,7 @@ import PurchaseInvoices from "./pages/Admin/PurchaseInvoice/PurchaseInvoices";
 import PurchaseInvoiceDetail from "./pages/Admin/PurchaseInvoice/PurchaseInvoiceDetail";
 import Vendors from "./pages/Admin/Vendors";
 import Customers from "./pages/Admin/Customers";
-import Staff from "./pages/Admin/Staff";
+import Staff from "./pages/Admin/Staff/Staff";
 import Reports from "./pages/Admin/Reports";
 import LowStock from "./pages/Admin/LowStock";
 import PartCategories from "./pages/Admin/PartCategory";
@@ -18,7 +18,10 @@ import Appointments from "./pages/Admin/Appointments/Appointments";
 import AppointmentDetail from "./pages/Admin/Appointments/AppointmentDetail";
 import PartRequests from "./pages/Admin/PartsRequest/PartsRequests";
 import PartRequestDetail from "./pages/Admin/PartsRequest/PartRequestDetail";
-
+import Reviews from "./pages/Admin/Reviews/Reviews";
+import CustomerLayout from "./layouts/CustomerLayout";
+import CustomerAppointments from "./pages/Customer/Appointment/CustomerAppointments";
+import Register from "./pages/Register";
 const ComingSoon = ({ name }) => (
   <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
     <div className="w-16 h-16 rounded-2xl bg-[rgba(233,30,140,0.1)] border border-[rgba(233,30,140,0.2)] flex items-center justify-center">
@@ -71,6 +74,7 @@ export default function App() {
           <Route path="appointments/:id" element={<AppointmentDetail />} />
           <Route path="part-requests" element={<PartRequests />} />
           <Route path="part-requests/:id" element={<PartRequestDetail />} />
+          <Route path="reviews" element={<Reviews />} />
           <Route
             path="search"
             element={<Navigate to="/admin/customers" replace />}
@@ -78,8 +82,18 @@ export default function App() {
 
           <Route path="reports" element={<Reports />} />
         </Route>
+        <Route path="/customer" element={<CustomerLayout />}>
+          <Route index element={<ComingSoon name="Customer Home" />} />
+          <Route path="appointments" element={<CustomerAppointments />} />
 
+          <Route
+            path="part-requests"
+            element={<ComingSoon name="My Part Requests" />}
+          />
+          <Route path="reviews" element={<ComingSoon name="My Reviews" />} />
+        </Route>
         <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </BrowserRouter>
   );

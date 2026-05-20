@@ -128,6 +128,9 @@ export const getAppointments = (pageNumber = 1, pageSize = 10) =>
 
 export const getAppointmentById = (id) => client.get(`/appointments/${id}`);
 
+export const createMyAppointment = (data) =>
+  client.post("/appointments/me", data);
+
 export const searchAppointments = ({
   query,
   status,
@@ -176,6 +179,51 @@ export const markPartRequestSourced = (id, data) =>
 export const rejectPartRequest = (id, data) =>
   client.patch(`/part-requests/${id}/reject`, data);
 
+// part requests - customer side
+export const createMyPartRequest = (data) =>
+  client.post("/part-requests/me", data);
+
+export const getMyPartRequests = () => client.get("/part-requests/me");
+
+export const getMyPartRequestById = (id) =>
+  client.get(`/part-requests/me/${id}`);
+
+// reviews - admin/staff
+export const getReviews = (pageNumber = 1, pageSize = 10) =>
+  client.get(`/reviews?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+
+export const getReviewById = (id) => client.get(`/reviews/${id}`);
+
+export const getReviewsByCustomerId = (customerId) =>
+  client.get(`/reviews/customer/${customerId}`);
+
+export const hideReview = (id) => client.patch(`/reviews/${id}/hide`);
+
+export const showReview = (id) => client.patch(`/reviews/${id}/show`);
+
+// customer profile - customer side
+export const getMyCustomerProfile = () => client.get("/customer-profile/me");
+
+export const updateMyCustomerProfile = (data) =>
+  client.put("/customer-profile/me", data);
+
+export const addMyVehicle = (data) =>
+  client.post("/customer-profile/me/vehicles", data);
+
+export const updateMyVehicle = (vehicleId, data) =>
+  client.put(`/customer-profile/me/vehicles/${vehicleId}`, data);
+
+export const deleteMyVehicle = (vehicleId) =>
+  client.delete(`/customer-profile/me/vehicles/${vehicleId}`);
+
+//staff
+export const getStaff = (pageNumber = 1, pageSize = 10) =>
+  client.get(`/Staff?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+export const getStaffById = (id) => client.get(`/Staff/${id}`);
+export const createStaff = (data) => client.post("/Staff", data);
+export const updateStaff = (id, data) => client.put(`/Staff/${id}`, data);
+export const deactivateStaff = (id) => client.delete(`/Staff/${id}`);
+
 //vendors
 export const getVendors = (pageNumber = 1, pageSize = 100) =>
   client.get(`/Vendors?pageNumber=${pageNumber}&pageSize=${pageSize}`);
@@ -195,14 +243,6 @@ export const getCustomerHistory = (id) =>
   client.get(`/Customers/${id}/history`);
 export const searchCustomers = (query) =>
   client.get(`/Customers/search?query=${encodeURIComponent(query)}`);
-
-//staff
-export const getStaff = (pageNumber = 1, pageSize = 10) =>
-  client.get(`/Staff?pageNumber=${pageNumber}&pageSize=${pageSize}`);
-export const getStaffById = (id) => client.get(`/Staff/${id}`);
-export const createStaff = (data) => client.post("/Staff", data);
-export const updateStaff = (id, data) => client.put(`/Staff/${id}`, data);
-export const deactivateStaff = (id) => client.patch(`/Staff/${id}/deactivate`);
 
 //reports
 export const getFinancialReport = (type = "daily") =>
