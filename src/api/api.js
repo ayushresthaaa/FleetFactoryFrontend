@@ -100,8 +100,7 @@ export const payPurchaseInvoice = (id) =>
   client.patch(`/PurchaseInvoice/${id}/status`);
 
 export const cancelPurchaseInvoice = (id) =>
-  client.patch(`/Pur
-    chaseInvoice/${id}/cancel`);
+  client.patch(`/PurchaseInvoice/${id}/cancel`);
 
 export const getCustomerAppointmentsForInvoice = (customerId) =>
   client.get(`/SalesInvoice/customer/${customerId}/appointments`);
@@ -247,7 +246,13 @@ export const getCustomerHistory = (id) =>
   client.get(`/Customers/${id}/history`);
 export const searchCustomers = (query) =>
   client.get(`/Customers/search?query=${encodeURIComponent(query)}`);
-
+export const customerLookup = (query, type = 0) =>
+  client.get("/CustomerLookup", {
+    params: {
+      query,
+      type,
+    },
+  });
 // customer profile - customer side
 export const getMyCustomerProfile = () => client.get("/customer-profile/me");
 
@@ -271,9 +276,69 @@ export const changePassword = (data) =>
 export const changeName = (data) => client.put("/account/change-name", data);
 export const getMyAccount = () => client.get("/account/me");
 
-//reports
-export const getFinancialReport = (type = "daily") =>
-  client.get(`/reports/financial?type=${type}`);
+// dashboard
+export const getAdminDashboard = () => client.get("/reports/admin-dashboard");
+
+export const getStaffDashboard = () => client.get("/reports/staff-dashboard");
+
+// reports - financial
+export const getFinancialSummary = (from, to) =>
+  client.get("/reports/financial-summary", {
+    params: { from, to },
+  });
+
+export const getRevenueTrend = (from, to, groupBy = "day") =>
+  client.get("/reports/revenue-trend", {
+    params: { from, to, groupBy },
+  });
+
+export const getPaymentMethodsReport = (from, to) =>
+  client.get("/reports/payment-methods", {
+    params: { from, to },
+  });
+
+export const getProfitEstimate = (from, to) =>
+  client.get("/reports/profit-estimate", {
+    params: { from, to },
+  });
+
+// reports - parts/sales
+export const getTopSellingPartsReport = (from, to) =>
+  client.get("/reports/top-selling-parts", {
+    params: { from, to },
+  });
+
+// reports - customers
+export const getHighSpenders = (from, to) =>
+  client.get("/reports/high-spenders", {
+    params: { from, to },
+  });
+
+export const getRegularCustomers = (from, to) =>
+  client.get("/reports/regular-customers", {
+    params: { from, to },
+  });
+
+export const getPendingCredits = () => client.get("/reports/pending-credits");
+
+export const getFrequentVehicles = (from, to) =>
+  client.get("/reports/frequent-vehicles", {
+    params: { from, to },
+  });
+
+// reports - appointments
+export const getAppointmentStats = (from, to) =>
+  client.get("/reports/appointment-stats", {
+    params: { from, to },
+  });
+
+export const getOverdueCredits = () => client.get("/reports/pending-credits");
+
+export const sendOverdueCreditReminder = (customerId) =>
+  client.post(`/overdue-credits/${customerId}/send-reminder`);
+
+export const sendAllOverdueCreditReminders = () =>
+  client.post("/overdue-credits/send-reminders");
 
 //low stock check
 export const checkLowStock = () => client.post("/LowStock/check");

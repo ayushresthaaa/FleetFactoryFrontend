@@ -6,9 +6,9 @@ import Parts from "./pages/Admin/Parts/Parts";
 import PurchaseInvoices from "./pages/Admin/PurchaseInvoice/PurchaseInvoices";
 import PurchaseInvoiceDetail from "./pages/Admin/PurchaseInvoice/PurchaseInvoiceDetail";
 import Vendors from "./pages/Admin/Vendors";
-import Customers from "./pages/Admin/Customers";
+import Customers from "./pages/Admin/Customer/Customers";
 import Staff from "./pages/Admin/Staff/Staff";
-import Reports from "./pages/Admin/Reports";
+import Reports from "./pages/Admin/Reports/Reports";
 import LowStock from "./pages/Admin/LowStock";
 import PartCategories from "./pages/Admin/PartCategory";
 import SalesInvoices from "./pages/Admin/SalesInvoice/SalesInvoice";
@@ -30,7 +30,8 @@ import PurchaseHistory from "./pages/Customer/Appointment/PurchaseHistory";
 import UpcomingAppointments from "./pages/Customer/Appointment/UpcomingAppointments";
 import CustomerProfile from "./pages/Customer/Profile/CustomerProfile";
 import AccountSettings from "./pages/Account/AccountSettings";
-
+import CustomerDetail from "./pages/Admin/Customer/CustomerDetail";
+import Dashboard from "./pages/Admin/Dashboard";
 const ComingSoon = ({ name }) => (
   <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
     <div className="w-16 h-16 rounded-2xl bg-[rgba(233,30,140,0.1)] border border-[rgba(233,30,140,0.2)] flex items-center justify-center">
@@ -57,7 +58,7 @@ export default function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Navigate to="dashboard" replace />} />
 
-          <Route path="dashboard" element={<ComingSoon name="Dashboard" />} />
+          <Route path="dashboard" element={<Dashboard />} />
 
           <Route path="parts" element={<Parts />} />
           <Route path="part-categories" element={<PartCategories />} />
@@ -79,6 +80,7 @@ export default function App() {
           <Route path="vendors" element={<Vendors />} />
           <Route path="staff" element={<Staff />} />
           <Route path="customers" element={<Customers />} />
+          <Route path="customers/:id" element={<CustomerDetail />} />
           <Route path="appointments" element={<Appointments />} />
           <Route path="appointments/:id" element={<AppointmentDetail />} />
           <Route path="part-requests" element={<PartRequests />} />

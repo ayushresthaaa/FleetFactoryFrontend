@@ -189,9 +189,9 @@ export default function CreateSalesInvoice() {
       const createdId = res.data?.data?.id;
 
       if (createdId) {
-        navigate(`/dashboard/sales-invoices/${createdId}`);
+        navigate(`/admin/sales-invoices/${createdId}`);
       } else {
-        navigate("/dashboard/sales-invoices");
+        navigate("/admin/sales-invoices");
       }
     } catch (err) {
       setError(err.message || "Failed to create invoice.");
