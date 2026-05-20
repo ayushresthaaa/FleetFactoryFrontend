@@ -55,29 +55,27 @@ export default function AppointmentHistory() {
   ).length;
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col gap-6">
+      {/* HEADER */}
       <div>
         <button
           onClick={() => navigate("/customer/appointments")}
-          className="mb-3 flex items-center gap-1 text-[#888] hover:text-[#e91e8c] bg-transparent border-none cursor-pointer text-[13px] p-0"
+          className="mb-4 flex items-center gap-1 text-[#888] hover:text-[#e91e8c] bg-transparent border-none cursor-pointer text-sm p-0"
         >
-          <span className="material-icons" style={{ fontSize: "16px" }}>
-            arrow_back
-          </span>
+          <span className="material-icons text-[18px]">arrow_back</span>
           Back to Appointments
         </button>
 
-        <h1 className="text-white text-2xl font-bold m-0">
-          Appointment History
-        </h1>
+        <h1 className="text-white text-4xl font-bold">Appointment History</h1>
 
-        <p className="text-[#666] text-sm mt-1">
+        <p className="text-[#777] text-[15px] mt-2">
           View your previous service appointments and leave reviews for
           completed services.
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      {/* STATS */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <StatCard
           label="Completed"
           value={completedCount}
@@ -93,57 +91,37 @@ export default function AppointmentHistory() {
         />
       </div>
 
-      <div className="bg-[#1a1a1a] border border-[#252525] rounded-xl overflow-hidden">
-        <div>
-          <button
-            onClick={() => navigate("/customer/appointments")}
-            className="mb-3 flex items-center gap-1 text-[#888] hover:text-[#e91e8c] bg-transparent border-none cursor-pointer text-[13px] p-0"
-          >
-            <span className="material-icons" style={{ fontSize: "16px" }}>
-              arrow_back
-            </span>
-            Back to Appointments
-          </button>
-
-          <h1 className="text-white text-2xl font-bold m-0">
-            Appointment History
-          </h1>
-
-          <p className="text-[#666] text-sm mt-1">
-            View your previous service appointments and leave reviews for
-            completed services.
-          </p>
-        </div>
-
+      {/* TABLE CARD */}
+      <div className="bg-[#161616] border border-[#252525] rounded-2xl overflow-hidden">
         {loading ? (
-          <div className="flex items-center justify-center py-20 gap-3">
+          <div className="flex items-center justify-center py-24 gap-3">
             <span
               className="material-icons text-[#e91e8c] animate-spin"
-              style={{ fontSize: "22px" }}
+              style={{ fontSize: "24px" }}
             >
               refresh
             </span>
 
-            <span className="text-[#555] text-[13px]">
+            <span className="text-[#666] text-sm">
               Loading appointment history...
             </span>
           </div>
         ) : error ? (
-          <div className="p-5">
-            <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-lg px-3 py-2">
+          <div className="p-6">
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl px-4 py-3">
               {error}
             </div>
           </div>
         ) : appointments.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-3">
+          <div className="flex flex-col items-center justify-center py-24 gap-3">
             <span
               className="material-icons text-[#333]"
-              style={{ fontSize: "40px" }}
+              style={{ fontSize: "48px" }}
             >
               history
             </span>
 
-            <p className="text-[#555] text-[13px] m-0">
+            <p className="text-[#555] text-sm m-0">
               No appointment history found.
             </p>
           </div>
@@ -151,7 +129,7 @@ export default function AppointmentHistory() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[#252525]">
+                <tr className="border-b border-[#252525] bg-[#1b1b1b]">
                   {[
                     "Vehicle",
                     "Appointment Date",
@@ -161,7 +139,7 @@ export default function AppointmentHistory() {
                   ].map((h) => (
                     <th
                       key={h}
-                      className="text-left text-[#555] text-[11px] font-semibold uppercase tracking-wider px-5 py-3"
+                      className="text-left text-[#666] text-xs font-semibold uppercase tracking-wider px-8 py-5"
                     >
                       {h}
                     </th>
@@ -177,31 +155,31 @@ export default function AppointmentHistory() {
                   return (
                     <tr
                       key={id}
-                      className="border-b border-[#1f1f1f] hover:bg-[#1f1f1f] transition-colors"
+                      className="border-b border-[#1f1f1f] hover:bg-[#1c1c1c] transition-colors"
                     >
-                      <td className="px-5 py-3.5">
-                        <div className="text-white text-[13px] font-medium">
+                      <td className="px-8 py-6">
+                        <div className="text-white text-[15px] font-semibold">
                           {appointment.vehicleNumber || "No vehicle"}
                         </div>
 
-                        <div className="text-[#555] text-[11px]">
+                        <div className="text-[#666] text-xs mt-1">
                           Service appointment
                         </div>
                       </td>
 
-                      <td className="px-5 py-3.5 text-[#aaa] text-[13px]">
+                      <td className="px-8 py-6 text-[#bbb] text-[14px] whitespace-nowrap">
                         {formatDate(appointment.scheduledAt)}
                       </td>
 
-                      <td className="px-5 py-3.5">
+                      <td className="px-8 py-6">
                         <span
-                          className={`flex items-center gap-1.5 w-fit text-[11px] font-semibold px-2.5 py-1 rounded-full ${
+                          className={`flex items-center gap-1.5 w-fit text-xs font-semibold px-3 py-1.5 rounded-full ${
                             STATUS_STYLE[status] ?? "bg-[#333] text-[#888]"
                           }`}
                         >
                           <span
                             className="material-icons"
-                            style={{ fontSize: "12px" }}
+                            style={{ fontSize: "14px" }}
                           >
                             {STATUS_ICON[status] ?? "help"}
                           </span>
@@ -210,32 +188,17 @@ export default function AppointmentHistory() {
                         </span>
                       </td>
 
-                      <td className="px-5 py-3.5 text-[#666] text-[12px] max-w-[280px] truncate">
+                      <td className="px-8 py-6 text-[#777] text-sm max-w-[350px]">
                         {appointment.notes || "No notes"}
                       </td>
 
-                      <td className="px-5 py-3.5">
+                      <td className="px-8 py-6">
                         {status === "Completed" ? (
-                          <button
-                            onClick={() =>
-                              navigate(
-                                `/customer/reviews/create?appointmentId=${id}`,
-                              )
-                            }
-                            className="h-8 px-3 flex items-center gap-1 rounded-lg text-[12px] text-[#e91e8c] hover:bg-[#e91e8c]/10 transition-colors cursor-pointer bg-transparent border border-[#e91e8c]/20"
-                          >
-                            <span
-                              className="material-icons"
-                              style={{ fontSize: "14px" }}
-                            >
-                              rate_review
-                            </span>
-                            Review
+                          <button className="bg-[#e91e8c] hover:bg-[#ff2b9f] text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors">
+                            Elligibele for review
                           </button>
                         ) : (
-                          <span className="text-[#555] text-[12px]">
-                            No action
-                          </span>
+                          <span className="text-[#555] text-sm">No action</span>
                         )}
                       </td>
                     </tr>
@@ -249,24 +212,24 @@ export default function AppointmentHistory() {
     </div>
   );
 }
-
 const StatCard = ({ label, value, icon, color }) => (
-  <div className="bg-[#1a1a1a] border border-[#252525] rounded-xl p-4 flex items-center gap-3">
+  <div className="bg-[#161616] border border-[#252525] rounded-2xl px-6 py-5 flex items-center gap-4">
     <div
-      className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+      className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0"
       style={{
         background: color + "18",
         border: `1px solid ${color}30`,
       }}
     >
-      <span className="material-icons" style={{ fontSize: "20px", color }}>
+      <span className="material-icons" style={{ fontSize: "24px", color }}>
         {icon}
       </span>
     </div>
 
     <div>
-      <div className="text-white text-xl font-bold leading-tight">{value}</div>
-      <div className="text-[#555] text-[11px] font-medium">{label}</div>
+      <div className="text-white text-3xl font-bold leading-none">{value}</div>
+
+      <div className="text-[#666] text-sm mt-1">{label}</div>
     </div>
   </div>
 );

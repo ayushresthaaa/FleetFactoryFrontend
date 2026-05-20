@@ -77,18 +77,16 @@ export default function Sidebar() {
       {/* Logo */}
       <div
         className={`
-          flex items-center gap-3 border-b border-[#222] mb-2
-          ${collapsed ? "justify-center px-0 py-5" : "px-[18px] py-5"}
-        `}
+    flex items-center gap-3 border-b border-[#222] mb-2
+    ${collapsed ? "justify-center px-0 py-5" : "px-[18px] py-5"}
+  `}
       >
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#e91e8c] to-[#c2185b] flex items-center justify-center shrink-0">
-          <span
-            className="material-icons text-white"
-            style={{ fontSize: "18px" }}
-          >
-            bolt
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#e91e8c] to-[#c2185b] flex items-center justify-center shrink-0">
+          <span className="material-icons text-white text-[20px]">
+            directions_car
           </span>
         </div>
+
         {!collapsed && (
           <span className="text-white font-bold text-[15px] tracking-wide whitespace-nowrap">
             FleetFactory

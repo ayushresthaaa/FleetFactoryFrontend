@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { createMyReview, getMyAppointmentHistory } from "../../../api/api";
 // import { AppointmentStatus } from "../../../constants/constantsHelpers";
 
@@ -14,7 +15,7 @@ export default function CreateReview() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-
+  const navigate = useNavigate();
   useEffect(() => {
     const loadAppointments = async () => {
       try {
@@ -60,12 +61,7 @@ export default function CreateReview() {
         comment: form.comment.trim(),
       });
 
-      setSuccess("Review submitted successfully.");
-      setForm({
-        appointmentId: "",
-        rating: 5,
-        comment: "",
-      });
+      navigate("/customer/reviews");
     } catch (err) {
       setError(
         err.response?.data?.message ||

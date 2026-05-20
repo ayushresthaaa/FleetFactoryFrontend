@@ -4,7 +4,7 @@ const NAV_ITEMS = [
   { label: "Home", path: "/customer" },
   { label: "Appointments", path: "/customer/appointments" },
   { label: "Part Requests", path: "/customer/part-requests" },
-  //   { label: "Reviews", path: "/customer/reviews" },
+  { label: "Reviews", path: "/customer/reviews" },
   { label: "Purchase History", path: "/customer/purchase-history" },
 ];
 

@@ -33,21 +33,24 @@ import AccountSettings from "./pages/Account/AccountSettings";
 import CustomerDetail from "./pages/Admin/Customer/CustomerDetail";
 import Dashboard from "./pages/Admin/Dashboard";
 import Home from "./pages/Customer/Home";
-const ComingSoon = ({ name }) => (
-  <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
-    <div className="w-16 h-16 rounded-2xl bg-[rgba(233,30,140,0.1)] border border-[rgba(233,30,140,0.2)] flex items-center justify-center">
-      <span
-        className="material-icons text-[#e91e8c]"
-        style={{ fontSize: "30px" }}
-      >
-        construction
-      </span>
-    </div>
+// import Reviews from "./pages/Admin/Reviews/Reviews";
+import CustomerReviews from "./pages/Customer/Review/CustomerReviews";
 
-    <h2 className="text-white text-lg font-semibold m-0">{name}</h2>
-    <p className="text-[#555] text-sm m-0">This page is coming soon</p>
-  </div>
-);
+// const ComingSoon = ({ name }) => (
+//   <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
+//     <div className="w-16 h-16 rounded-2xl bg-[rgba(233,30,140,0.1)] border border-[rgba(233,30,140,0.2)] flex items-center justify-center">
+//       <span
+//         className="material-icons text-[#e91e8c]"
+//         style={{ fontSize: "30px" }}
+//       >
+//         construction
+//       </span>
+//     </div>
+
+//     <h2 className="text-white text-lg font-semibold m-0">{name}</h2>
+//     <p className="text-[#555] text-sm m-0">This page is coming soon</p>
+//   </div>
+// );
 
 export default function App() {
   return (
@@ -112,7 +115,7 @@ export default function App() {
           <Route path="reviews/create" element={<CreateReview />} />
           <Route path="account/settings" element={<AccountSettings />} />
           <Route path="profile" element={<CustomerProfile />} />
-          <Route path="reviews" element={<ComingSoon name="My Reviews" />} />
+          <Route path="reviews" element={<CustomerReviews />} />
         </Route>
         <Route path="/register" element={<Register />} />
         <Route path="*" element={<Navigate to="/login" replace />} />

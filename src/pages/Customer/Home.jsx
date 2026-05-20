@@ -4,139 +4,183 @@ export default function Home() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#101010] text-white">
-      <header className="h-[70px] flex items-center justify-between px-10 border-b border-[#222] bg-[#141414]">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#e91e8c] to-[#c2185b] flex items-center justify-center">
-            <span className="material-icons text-white">bolt</span>
-          </div>
-          <span className="font-bold text-lg tracking-wide">FleetFactory</span>
-        </div>
+    <div className="flex flex-col gap-8">
+      <section className="relative overflow-hidden bg-[#1a1a1a] border border-[#252525] rounded-3xl p-8 md:p-10">
+        <div className="absolute -top-20 -right-20 w-80 h-80 bg-[#e91e8c]/10 blur-3xl rounded-full" />
+        <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-[#c2185b]/10 blur-3xl rounded-full" />
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate("/login")}
-            className="px-4 py-2 rounded-lg border border-[#333] text-[#ccc] hover:text-white hover:border-[#e91e8c]"
-          >
-            Login
-          </button>
-          <button
-            onClick={() => navigate("/register")}
-            className="px-4 py-2 rounded-lg bg-[#e91e8c] text-white font-semibold hover:opacity-90"
-          >
-            Register
-          </button>
-        </div>
-      </header>
-
-      <main className="px-10 py-14">
-        <section className="max-w-6xl mx-auto grid grid-cols-2 gap-12 items-center">
+        <div className="relative grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-8 items-center">
           <div>
-            <span className="text-[#e91e8c] text-sm font-semibold">
-              Vehicle Parts & Service Management
+            <span className="inline-flex items-center gap-2 text-[#e91e8c] text-xs font-semibold uppercase tracking-wider">
+              <span className="material-icons text-[16px]">directions_car</span>
+              FleetFactory Customer Portal
             </span>
 
-            <h1 className="text-5xl font-bold leading-tight mt-4 mb-5">
-              Smart vehicle service and parts support in one place.
+            <h1 className="text-white text-4xl md:text-5xl font-bold leading-tight mt-4 mb-4">
+              Manage your vehicle service, parts, and history in one place.
             </h1>
 
-            <p className="text-[#aaa] text-[15px] leading-7 mb-8 max-w-xl">
-              FleetFactory helps customers book appointments, request
-              unavailable parts, manage vehicles, and view purchase or service
-              history with a smooth digital experience.
+            <p className="text-[#aaa] text-sm md:text-base leading-7 max-w-2xl">
+              Book appointments, request unavailable vehicle parts, manage your
+              registered vehicles, and view your service or purchase history
+              through a simple customer dashboard.
             </p>
 
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3 mt-7">
               <button
-                onClick={() => navigate("/customer/book-appointment")}
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#e91e8c] to-[#c2185b] text-white font-semibold hover:opacity-90"
+                onClick={() => navigate("/customer/appointments")}
+                className="flex items-center gap-2 bg-gradient-to-r from-[#e91e8c] to-[#c2185b] text-white font-semibold px-5 py-3 rounded-xl hover:opacity-90 border-none cursor-pointer"
               >
-                Book Now
+                <span className="material-icons text-[18px]">event</span>
+                Book Appointment
               </button>
 
               <button
-                onClick={() => navigate("/customer/part-request")}
-                className="px-6 py-3 rounded-xl border border-[#333] text-[#ddd] hover:border-[#e91e8c] hover:text-white"
+                onClick={() => navigate("/customer/part-requests")}
+                className="flex items-center gap-2 bg-[#111] border border-[#333] text-[#ddd] font-semibold px-5 py-3 rounded-xl hover:border-[#e91e8c] hover:text-white cursor-pointer"
               >
+                <span className="material-icons text-[18px]">inventory_2</span>
                 Request Part
               </button>
             </div>
           </div>
 
-          <div className="bg-[#1a1a1a] border border-[#252525] rounded-2xl p-6 shadow-xl">
-            <div className="grid grid-cols-2 gap-4">
-              <Feature
-                icon="event"
-                title="Book Service"
-                text="Schedule vehicle appointments easily."
+          <div className="bg-[#111] border border-[#292929] rounded-2xl p-5">
+            <div className="grid grid-cols-2 gap-3">
+              <MiniCard
+                icon="event_available"
+                label="Appointments"
+                value="Book service"
               />
-              <Feature
+              <MiniCard
                 icon="inventory_2"
-                title="Parts Support"
-                text="Request unavailable vehicle parts."
+                label="Parts"
+                value="Request items"
               />
-              <Feature
+              <MiniCard
                 icon="directions_car"
-                title="Vehicle Profile"
-                text="Manage your registered vehicles."
+                label="Vehicles"
+                value="Manage profile"
               />
-              <Feature
+              <MiniCard
                 icon="receipt_long"
-                title="History"
-                text="View service and purchase records."
+                label="History"
+                value="Track records"
               />
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="max-w-6xl mx-auto mt-16 grid grid-cols-3 gap-5">
-          <ActionCard
-            icon="event_available"
-            title="Book Appointment"
-            text="Choose your vehicle and request a service appointment."
-            button="Book Now"
-            onClick={() => navigate("/customer/book-appointment")}
-          />
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <ActionCard
+          icon="event"
+          title="Book Appointment"
+          text="Schedule a service appointment for your registered vehicle."
+          button="Go to Appointments"
+          onClick={() => navigate("/customer/appointments")}
+        />
 
-          <ActionCard
-            icon="search"
-            title="Request Parts"
-            text="Tell us what part you need if it is not available."
-            button="Request"
-            onClick={() => navigate("/customer/part-request")}
-          />
+        <ActionCard
+          icon="search"
+          title="Request Unavailable Parts"
+          text="Search existing parts first, then request parts that are limited or unavailable."
+          button="Request Part"
+          onClick={() => navigate("/customer/part-requests")}
+        />
 
-          <ActionCard
-            icon="person"
-            title="Customer Portal"
-            text="Login to view your profile, vehicles and history."
-            button="Go to Portal"
-            onClick={() => navigate("/login")}
-          />
-        </section>
-      </main>
+        <ActionCard
+          icon="receipt_long"
+          title="View Purchase History"
+          text="Check your previous purchase and service invoice records."
+          button="View History"
+          onClick={() => navigate("/customer/purchase-history")}
+        />
+      </section>
+
+      <section className="grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-5">
+        <div className="bg-[#1a1a1a] border border-[#252525] rounded-2xl p-6">
+          <span className="material-icons text-[#e91e8c] text-[30px]">
+            verified
+          </span>
+
+          <h2 className="text-white text-xl font-bold mt-4 mb-2">
+            Designed for a smoother garage experience
+          </h2>
+
+          <p className="text-[#888] text-sm leading-6">
+            FleetFactory connects customers with service booking, part request
+            tracking, reviews, purchase history, and vehicle profile management.
+          </p>
+        </div>
+
+        <div className="bg-[#1a1a1a] border border-[#252525] rounded-2xl p-6">
+          <h2 className="text-white text-xl font-bold mb-5">What you can do</h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Feature
+              icon="person"
+              title="Manage Profile"
+              text="Update your personal details and registered vehicles."
+            />
+            <Feature
+              icon="rate_review"
+              title="Service Reviews"
+              text="Review completed appointments and view your submitted feedback."
+            />
+            <Feature
+              icon="schedule"
+              title="Upcoming Appointments"
+              text="View confirmed or pending appointments from your customer portal."
+            />
+            <Feature
+              icon="build"
+              title="Part Support"
+              text="Request parts that are unavailable or limited in stock."
+            />
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
 
-const Feature = ({ icon, title, text }) => (
-  <div className="bg-[#141414] border border-[#292929] rounded-xl p-5">
-    <span className="material-icons text-[#e91e8c] mb-3">{icon}</span>
-    <h3 className="text-white font-semibold text-[15px] mb-1">{title}</h3>
-    <p className="text-[#777] text-[13px] leading-5">{text}</p>
+const MiniCard = ({ icon, label, value }) => (
+  <div className="bg-[#1a1a1a] border border-[#252525] rounded-xl p-4">
+    <span className="material-icons text-[#e91e8c] text-[22px]">{icon}</span>
+    <p className="text-white text-sm font-semibold mt-3 mb-1">{label}</p>
+    <p className="text-[#666] text-xs m-0">{value}</p>
   </div>
 );
 
 const ActionCard = ({ icon, title, text, button, onClick }) => (
-  <div className="bg-[#1a1a1a] border border-[#252525] rounded-2xl p-6">
-    <span className="material-icons text-[#e91e8c] mb-4">{icon}</span>
-    <h3 className="text-white font-semibold text-lg mb-2">{title}</h3>
-    <p className="text-[#888] text-[14px] leading-6 mb-5">{text}</p>
+  <div className="bg-[#1a1a1a] border border-[#252525] rounded-2xl p-6 hover:border-[#e91e8c]/40 transition-colors">
+    <div className="w-11 h-11 rounded-xl bg-[#e91e8c]/10 border border-[#e91e8c]/20 flex items-center justify-center mb-4">
+      <span className="material-icons text-[#e91e8c] text-[22px]">{icon}</span>
+    </div>
+
+    <h3 className="text-white text-lg font-bold mb-2">{title}</h3>
+
+    <p className="text-[#888] text-sm leading-6 mb-5">{text}</p>
+
     <button
       onClick={onClick}
-      className="text-[#e91e8c] text-sm font-semibold hover:underline"
+      className="text-[#e91e8c] text-sm font-semibold bg-transparent border-none cursor-pointer hover:underline p-0"
     >
       {button}
     </button>
+  </div>
+);
+
+const Feature = ({ icon, title, text }) => (
+  <div className="flex gap-3 bg-[#111] border border-[#252525] rounded-xl p-4">
+    <span className="material-icons text-[#e91e8c] text-[21px] shrink-0">
+      {icon}
+    </span>
+
+    <div>
+      <h3 className="text-white text-sm font-semibold m-0">{title}</h3>
+      <p className="text-[#777] text-xs leading-5 mt-1 mb-0">{text}</p>
+    </div>
   </div>
 );
