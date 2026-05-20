@@ -38,6 +38,7 @@ export const getAvailableParts = () => client.get("/Parts/available");
 export const getPartStockMovements = (id) =>
   client.get(`/Parts/${id}/stock-movements`);
 
+
 //part categories
 export const getPartCategories = () => client.get("/PartCategory");
 
@@ -200,6 +201,20 @@ export const getReviewsByCustomerId = (customerId) =>
 export const hideReview = (id) => client.patch(`/reviews/${id}/hide`);
 
 export const showReview = (id) => client.patch(`/reviews/${id}/show`);
+// reviews - customer side
+export const createMyReview = (data) =>
+  client.post("/reviews/me", data);
+
+export const getMyReviews = () =>
+  client.get("/reviews/me");
+
+export const getMyReviewById = (id) =>
+  client.get(`/reviews/me/${id}`);
+
+// customer appointment history
+export const getMyAppointmentHistory = () =>
+  client.get("/customer-side/me/appointment-history");
+
 
 // customer profile - customer side
 export const getMyCustomerProfile = () => client.get("/customer-profile/me");

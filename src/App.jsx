@@ -21,7 +21,11 @@ import PartRequestDetail from "./pages/Admin/PartsRequest/PartRequestDetail";
 import Reviews from "./pages/Admin/Reviews/Reviews";
 import CustomerLayout from "./layouts/CustomerLayout";
 import CustomerAppointments from "./pages/Customer/Appointment/CustomerAppointments";
+import CustomerPartRequests from "./pages/Customer/PartRequest/CustomerPartRequests";
+import CreatePartRequest from "./pages/Customer/PartRequest/CreatePartRequest";
 import Register from "./pages/Register";
+import CreateReview from "./pages/Customer/Review/CreateReview";
+
 const ComingSoon = ({ name }) => (
   <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
     <div className="w-16 h-16 rounded-2xl bg-[rgba(233,30,140,0.1)] border border-[rgba(233,30,140,0.2)] flex items-center justify-center">
@@ -83,17 +87,21 @@ export default function App() {
           <Route path="reports" element={<Reports />} />
         </Route>
         <Route path="/customer" element={<CustomerLayout />}>
-          <Route index element={<ComingSoon name="Customer Home" />} />
+          {/* <Route index element={<ComingSoon name="Customer Home" />} /> */}
+
+          {/* Appointments */}
           <Route path="appointments" element={<CustomerAppointments />} />
 
-          <Route
-            path="part-requests"
-            element={<ComingSoon name="My Part Requests" />}
-          />
+          {/* Part Requests - Specific layouts MUST come before generic ones */}
+          <Route path="part-requests/create" element={<CreatePartRequest />} />
+          <Route path="part-requests" element={<CustomerPartRequests />} />
+
+          {/* Reviews - Specific layouts MUST come before generic ones */}
+          <Route path="reviews/create" element={<CreateReview />} />
           <Route path="reviews" element={<ComingSoon name="My Reviews" />} />
         </Route>
-        <Route path="*" element={<Navigate to="/login" replace />} />
         <Route path="/register" element={<Register />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );
