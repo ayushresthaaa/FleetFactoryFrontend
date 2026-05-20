@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getMyUpcomingAppointments } from "../../../api/api";
+import { useNavigate } from "react-router-dom";
 
 const STATUS_STYLE = {
   Pending: "bg-yellow-500/15 text-yellow-400",
@@ -15,7 +16,7 @@ export default function UpcomingAppointments() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  const navigate = useNavigate();
   useEffect(() => {
     const loadUpcoming = async () => {
       try {
@@ -50,9 +51,20 @@ export default function UpcomingAppointments() {
   return (
     <div className="flex flex-col gap-5">
       <div>
+        <button
+          onClick={() => navigate("/customer/appointments")}
+          className="mb-3 flex items-center gap-1 text-[#888] hover:text-[#e91e8c] bg-transparent border-none cursor-pointer text-[13px] p-0"
+        >
+          <span className="material-icons" style={{ fontSize: "16px" }}>
+            arrow_back
+          </span>
+          Back to Appointments
+        </button>
+
         <h1 className="text-white text-2xl font-bold m-0">
           Upcoming Appointments
         </h1>
+
         <p className="text-[#666] text-sm mt-1">
           View your pending and confirmed service appointments.
         </p>

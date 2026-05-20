@@ -22,7 +22,6 @@ export default function AppointmentHistory() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
   useEffect(() => {
     const loadHistory = async () => {
       try {
@@ -57,17 +56,25 @@ export default function AppointmentHistory() {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-white text-2xl font-bold m-0">
-            Appointment History
-          </h1>
+      <div>
+        <button
+          onClick={() => navigate("/customer/appointments")}
+          className="mb-3 flex items-center gap-1 text-[#888] hover:text-[#e91e8c] bg-transparent border-none cursor-pointer text-[13px] p-0"
+        >
+          <span className="material-icons" style={{ fontSize: "16px" }}>
+            arrow_back
+          </span>
+          Back to Appointments
+        </button>
 
-          <p className="text-[#666] text-sm mt-1">
-            View your previous service appointments and leave reviews for
-            completed services.
-          </p>
-        </div>
+        <h1 className="text-white text-2xl font-bold m-0">
+          Appointment History
+        </h1>
+
+        <p className="text-[#666] text-sm mt-1">
+          View your previous service appointments and leave reviews for
+          completed services.
+        </p>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -87,14 +94,25 @@ export default function AppointmentHistory() {
       </div>
 
       <div className="bg-[#1a1a1a] border border-[#252525] rounded-xl overflow-hidden">
-        <div className="px-5 py-3.5 border-b border-[#252525] flex items-center justify-between">
-          <h3 className="text-white text-[14px] font-semibold m-0">
-            Appointment History
-          </h3>
+        <div>
+          <button
+            onClick={() => navigate("/customer/appointments")}
+            className="mb-3 flex items-center gap-1 text-[#888] hover:text-[#e91e8c] bg-transparent border-none cursor-pointer text-[13px] p-0"
+          >
+            <span className="material-icons" style={{ fontSize: "16px" }}>
+              arrow_back
+            </span>
+            Back to Appointments
+          </button>
 
-          <span className="text-[#555] text-[12px]">
-            {appointments.length} total
-          </span>
+          <h1 className="text-white text-2xl font-bold m-0">
+            Appointment History
+          </h1>
+
+          <p className="text-[#666] text-sm mt-1">
+            View your previous service appointments and leave reviews for
+            completed services.
+          </p>
         </div>
 
         {loading ? (

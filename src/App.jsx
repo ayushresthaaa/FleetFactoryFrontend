@@ -28,6 +28,8 @@ import CreateReview from "./pages/Customer/Review/CreateReview";
 import AppointmentHistory from "./pages/Customer/Appointment/AppointmentHistory";
 import PurchaseHistory from "./pages/Customer/Appointment/PurchaseHistory";
 import UpcomingAppointments from "./pages/Customer/Appointment/UpcomingAppointments";
+import CustomerProfile from "./pages/Customer/Profile/CustomerProfile";
+import AccountSettings from "./pages/Account/AccountSettings";
 
 const ComingSoon = ({ name }) => (
   <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
@@ -105,6 +107,8 @@ export default function App() {
           />
           {/* Reviews - Specific layouts MUST come before generic ones */}
           <Route path="reviews/create" element={<CreateReview />} />
+          <Route path="account/settings" element={<AccountSettings />} />
+          <Route path="profile" element={<CustomerProfile />} />
           <Route path="reviews" element={<ComingSoon name="My Reviews" />} />
         </Route>
         <Route path="/register" element={<Register />} />
