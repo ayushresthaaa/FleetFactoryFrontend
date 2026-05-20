@@ -38,7 +38,6 @@ export const getAvailableParts = () => client.get("/Parts/available");
 export const getPartStockMovements = (id) =>
   client.get(`/Parts/${id}/stock-movements`);
 
-
 //part categories
 export const getPartCategories = () => client.get("/PartCategory");
 
@@ -202,19 +201,11 @@ export const hideReview = (id) => client.patch(`/reviews/${id}/hide`);
 
 export const showReview = (id) => client.patch(`/reviews/${id}/show`);
 // reviews - customer side
-export const createMyReview = (data) =>
-  client.post("/reviews/me", data);
+export const createMyReview = (data) => client.post("/reviews/me", data);
 
-export const getMyReviews = () =>
-  client.get("/reviews/me");
+export const getMyReviews = () => client.get("/reviews/me");
 
-export const getMyReviewById = (id) =>
-  client.get(`/reviews/me/${id}`);
-
-// customer appointment history
-export const getMyAppointmentHistory = () =>
-  client.get("/customer-side/me/appointment-history");
-
+export const getMyReviewById = (id) => client.get(`/reviews/me/${id}`);
 
 // customer profile - customer side
 export const getMyCustomerProfile = () => client.get("/customer-profile/me");
@@ -238,6 +229,19 @@ export const getStaffById = (id) => client.get(`/Staff/${id}`);
 export const createStaff = (data) => client.post("/Staff", data);
 export const updateStaff = (id, data) => client.put(`/Staff/${id}`, data);
 export const deactivateStaff = (id) => client.delete(`/Staff/${id}`);
+
+//history - customer side and appointments/purchase - rabison
+export const getMyPurchaseHistory = () =>
+  client.get("/customer-side/me/purchase-history");
+
+export const getMyUpcomingAppointments = () =>
+  client.get("/customer-side/me/upcoming-appointments");
+
+export const getMyAppointmentById = (id) =>
+  client.get(`/customer-side/me/appointments/${id}`);
+
+export const getMyAppointmentHistory = () =>
+  client.get("/customer-side/me/appointment-history");
 
 //vendors
 export const getVendors = (pageNumber = 1, pageSize = 100) =>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { createMyAppointment, getMyCustomerProfile } from "../../../api/api";
+import { Link } from "react-router-dom";
 
 export default function CustomerAppointments() {
   const [form, setForm] = useState({
@@ -224,8 +225,39 @@ export default function CustomerAppointments() {
       </section>
 
       <section className="grid grid-cols-2 gap-5">
-        <PlaceholderCard title="Upcoming Appointments" icon="event_available" />
-        <PlaceholderCard title="Appointment History" icon="history" />
+        <Link
+          to="/customer/appointments/upcoming"
+          className="bg-[#1a1a1a] border border-[#252525] rounded-xl p-6 flex items-center gap-4 no-underline"
+        >
+          <span className="material-icons text-[#e91e8c]">event_available</span>
+
+          <div>
+            <h3 className="text-white text-sm font-semibold">
+              Upcoming Appointments
+            </h3>
+
+            <p className="text-[#666] text-xs">
+              View your upcoming scheduled appointments.
+            </p>
+          </div>
+        </Link>
+
+        <Link
+          to="/customer/appointments/history"
+          className="bg-[#1a1a1a] border border-[#252525] rounded-xl p-6 flex items-center gap-4 no-underline"
+        >
+          <span className="material-icons text-[#e91e8c]">history</span>
+
+          <div>
+            <h3 className="text-white text-sm font-semibold">
+              Appointment History
+            </h3>
+
+            <p className="text-[#666] text-xs">
+              View your previous service appointments.
+            </p>
+          </div>
+        </Link>
       </section>
     </div>
   );
@@ -255,23 +287,6 @@ const Info = ({ icon, title, text }) => (
       <span className="text-white text-sm font-medium">{title}</span>
     </div>
     <p className="text-[#666] text-xs leading-5 mt-2 mb-0">{text}</p>
-  </div>
-);
-
-const PlaceholderCard = ({ title, icon }) => (
-  <div className="bg-[#1a1a1a] border border-[#252525] rounded-xl p-6 flex items-center gap-4">
-    <div className="w-11 h-11 rounded-xl bg-[#111] border border-[#252525] flex items-center justify-center">
-      <span className="material-icons text-[#555]" style={{ fontSize: "22px" }}>
-        {icon}
-      </span>
-    </div>
-
-    <div>
-      <h3 className="text-white text-sm font-semibold m-0">{title}</h3>
-      <p className="text-[#555] text-xs mt-1 mb-0">
-        This section will be connected later.
-      </p>
-    </div>
   </div>
 );
 

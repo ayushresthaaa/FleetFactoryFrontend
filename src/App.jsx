@@ -25,6 +25,9 @@ import CustomerPartRequests from "./pages/Customer/PartRequest/CustomerPartReque
 import CreatePartRequest from "./pages/Customer/PartRequest/CreatePartRequest";
 import Register from "./pages/Register";
 import CreateReview from "./pages/Customer/Review/CreateReview";
+import AppointmentHistory from "./pages/Customer/Appointment/AppointmentHistory";
+import PurchaseHistory from "./pages/Customer/Appointment/PurchaseHistory";
+import UpcomingAppointments from "./pages/Customer/Appointment/UpcomingAppointments";
 
 const ComingSoon = ({ name }) => (
   <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
@@ -89,13 +92,17 @@ export default function App() {
         <Route path="/customer" element={<CustomerLayout />}>
           {/* <Route index element={<ComingSoon name="Customer Home" />} /> */}
 
-          {/* Appointments */}
           <Route path="appointments" element={<CustomerAppointments />} />
+          <Route path="appointments/history" element={<AppointmentHistory />} />
 
-          {/* Part Requests - Specific layouts MUST come before generic ones */}
           <Route path="part-requests/create" element={<CreatePartRequest />} />
           <Route path="part-requests" element={<CustomerPartRequests />} />
 
+          <Route path="purchase-history" element={<PurchaseHistory />} />
+          <Route
+            path="appointments/upcoming"
+            element={<UpcomingAppointments />}
+          />
           {/* Reviews - Specific layouts MUST come before generic ones */}
           <Route path="reviews/create" element={<CreateReview />} />
           <Route path="reviews" element={<ComingSoon name="My Reviews" />} />
